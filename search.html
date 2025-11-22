@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tìm kiếm - Moon Book</title>
+  <meta name="description" content="Tìm kiếm truyện nhanh chóng, lọc theo thể loại, tác giả, đánh giá." />
+  <meta property="og:title" content="Tìm kiếm - Moon Book" />
+  <meta property="og:description" content="Tìm kiếm truyện nhanh chóng, lọc theo thể loại, tác giả, đánh giá." />
+  <meta property="og:image" content="https://via.placeholder.com/1200x630/4c6ef5/ffffff?text=Moon+Book+Search" />
+  <link rel="canonical" href="https://moonbook.vn/search.html" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4c6ef5">
+
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;
+      --primary-light: #748ffc;
+      --accent: #38b2ac;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 22px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.8;
+      transition: var(--transition);
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      height: 78px;
+    }
+
+    .logo {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo i {
+      font-size: 2.4rem;
+      color: var(--primary);
+      filter: drop-shadow(0 4px 8px rgba(76, 110, 245, 0.3));
+      transition: var(--transition);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.55rem;
+      cursor: pointer;
+      color: var(--primary);
+      padding: 10px;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      background: rgba(76, 110, 245, 0.15);
+      transform: scale(1.12);
+    }
+
+    /* Search Hero */
+    .search-hero {
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .search-hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 60px 18px 24px;
+      border: 2.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 1.15rem;
+      outline: none;
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 6px rgba(76, 110, 245, 0.18);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.3rem;
+      pointer-events: none;
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin: 40px 0;
+      padding: 20px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.98rem;
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Results */
+    .results-info {
+      text-align: center;
+      margin: 30px 0;
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .story-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .story-card:hover {
+      transform: translateY(-14px);
+      box-shadow: 0 24px 48px rgba(76, 110, 245, 0.18);
+      border-color: var(--primary);
+    }
+
+    .story-cover {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      background: linear-gradient(45deg, #dbeafe, #ccfbf1);
+    }
+
+    .story-info {
+      padding: 20px;
+    }
+
+    .story-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: var(--text-primary);
+    }
+
+    .story-meta {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rating {
+      display: flex;
+      gap: 2px;
+      font-size: 0.9rem;
+      color: #fbbf24;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      color: var(--border);
+    }
+
+    /* Loading State */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .loading i {
+      margin-right: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .search-hero h1 { font-size: 2.2rem; }
+      .search-input { padding: 16px 55px 16px 20px; font-size: 1.05rem; }
+      .filters { flex-direction: column; align-items: center; }
+      .filter-group { width: 100%; justify-content: center; }
+      .filter-select { width: 80%; text-align: center; }
+      .stories-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <i class="fas fa-book-open"></i> Moon Book
+      </a>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <i class="fas fa-sun"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Search Hero -->
+  <section class="search-hero">
+    <div class="container">
+      <h1>Tìm kiếm truyện</h1>
+      <div class="search-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="Tìm theo tên, tác giả, thể loại..." autofocus>
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="container">
+    <div class="filters">
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Thể loại:</label>
+        <select class="filter-select" id="genreFilter">
+          <option value="">Tất cả</option>
+          <option value="Hành động">Hành động</option>
+          <option value="Huyền huyễn">Huyền huyễn</option>
+          <option value="Tình cảm">Tình cảm</option>
+          <option value="Khoa học">Khoa học</option>
+          <option value="Kinh dị">Kinh dị</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-sync"></i> Trạng thái:</label>
+        <select class="filter-select" id="statusFilter">
+          <option value="">Tất cả</option>
+          <option value="ongoing">Đang ra</option>
+          <option value="completed">Hoàn thành</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-star"></i> Đánh giá:</label>
+        <select class="filter-select" id="ratingFilter">
+          <option value="">Tất cả</option>
+          <option value="4.5">4.5+</option>
+          <option value="4.0">4.0+</option>
+          <option value="3.5">3.5+</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="container">
+    <div class="results-info" id="resultsInfo">Đang tải dữ liệu...</div>
+    <div class="stories-grid" id="searchResults">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải truyện...
+      </div>
+    </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <i class="fas fa-search"></i>
+      <h3>Không tìm thấy truyện nào</h3>
+      <p>Thử thay đổi từ khóa hoặc bộ lọc</p>
+    </div>
+  </section>
+
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    
+    // Hàm gọi API chung
+    async function fetchAPIData(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: options.method || 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return { status: 'success', data };
+        
+      } catch (error) {
+        console.error('API Error:', error);
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // Hàm lấy tất cả truyện
+    async function fetchAllStories() {
+      const result = await fetchAPIData('/api/stories');
+      return result;
+    }
+
+    // Hàm tìm kiếm truyện (nếu API có endpoint search)
+    async function searchStoriesFromAPI(query, filters) {
+      // Thử endpoint search trước
+      const params = new URLSearchParams();
+      if (query) params.append('q', query);
+      if (filters.genre) params.append('genre', filters.genre);
+      if (filters.status) params.append('status', filters.status);
+      
+      const result = await fetchAPIData(`/api/stories/search?${params.toString()}`);
+      return result;
+    }
+    // ====================================================================================
+
+    // ==================== GLOBAL VARIABLES ====================
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const ratingFilter = document.getElementById('ratingFilter');
+    const resultsInfo = document.getElementById('resultsInfo');
+    const searchResults = document.getElementById('searchResults');
+    const emptyState = document.getElementById('emptyState');
+
+    let allStories = [];
+    let isLoading = false;
+    let searchTimeout;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      updateThemeIcon();
+      await loadStoriesFromAPI();
+      setupEventListeners();
+      
+      // Lấy từ khóa từ URL nếu có
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlQuery = urlParams.get('q');
+      if (urlQuery) {
+        searchInput.value = urlQuery;
+        performSearch();
+      }
+    });
+
+    // ==================== API DATA LOADING ====================
+    async function loadStoriesFromAPI() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải truyện...</div>';
+
+      try {
+        // Thử lấy tất cả truyện từ API
+        const result = await fetchAllStories();
+        
+        if (result.status === 'error') {
+          throw new Error(result.message || 'Không thể tải dữ liệu');
+        }
+
+        // Chuyển đổi dữ liệu API sang format UI
+        allStories = (result.data || []).map(story => ({
+          id: story._id || story.id,
+          title: story.title || 'Không tên',
+          author: story.author || 'Ẩn danh',
+          genres: story.genres || [],
+          status: story.status === 'ongoing' ? 'Đang ra' : story.status === 'completed' ? 'Hoàn thành' : story.status || 'Không rõ',
+          rating: 4.5, // API không có rating, mặc định 4.5
+          cover: story.cover || 'https://via.placeholder.com/220x290/4c6ef5/ffffff?text=No+Cover',
+          views: story.views || 0
+        }));
+
+        // Lưu vào localStorage làm backup
+        localStorage.setItem('all_stories_backup', JSON.stringify(allStories));
+        
+        // Hiển thị tất cả truyện ban đầu
+        displayResults(allStories, '');
+        
+      } catch (error) {
+        console.error('Lỗi tải truyện:', error);
+        
+        // Fallback: thử load từ localStorage
+        const saved = localStorage.getItem('all_stories_backup');
+        if (saved) {
+          allStories = JSON.parse(saved);
+          displayResults(allStories, '');
+          showToast('Đang hiển thị dữ liệu tạm thời');
+        } else {
+          // Fallback cuối: dùng dữ liệu mẫu
+          useSampleData();
+        }
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    function useSampleData() {
+      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+      allStories = [
+        { id: '1', title: "Solo Leveling", author: "Chugong", genres: ["Hành động", "Huyền huyễn"], status: "Hoàn thành", rating: 4.9, cover: "https://via.placeholder.com/220x290/4c6ef5/ffffff?text=Solo", views: 2850000 },
+        { id: '2', title: "One Piece", author: "Eiichiro Oda", genres: ["Hành động", "Phiêu lưu"], status: "Đang ra", rating: 4.8, cover: "https://via.placeholder.com/220x290/38b2ac/ffffff?text=One+Piece", views: 5000000 },
+        { id: '3', title: "Your Name", author: "Makoto Shinkai", genres: ["Tình cảm", "Huyền bí"], status: "Hoàn thành", rating: 4.7, cover: "https://via.placeholder.com/220x290/ef4444/ffffff?text=Your+Name", views: 1200000 },
+        { id: '4', title: "Attack on Titan", author: "Hajime Isayama", genres: ["Hành động", "Kinh dị"], status: "Hoàn thành", rating: 4.6, cover: "https://via.placeholder.com/220x290/1e293b/ffffff?text=AoT", views: 3800000 }
+      ];
+      displayResults(allStories, '');
+      showToast('Đang dùng dữ liệu mẫu');
+    }
+
+    // ==================== SEARCH FUNCTIONALITY ====================
+    function setupEventListeners() {
+      // Lắng nghe thay đổi trên tất cả input
+      [searchInput, genreFilter, statusFilter, ratingFilter].forEach(el => {
+        el.addEventListener('input', () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(performSearch, 300);
+        });
+        el.addEventListener('change', performSearch);
+      });
+    }
+
+    async function performSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      const genre = genreFilter.value;
+      const status = statusFilter.value;
+      const minRating = parseFloat(ratingFilter.value) || 0;
+
+      // Hiển thị trạng thái loading
+      searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
+
+      try {
+        // Thử tìm kiếm qua API trước
+        const filters = { genre, status, rating: minRating };
+        const result = await searchStoriesFromAPI(query, filters);
+        
+        let filteredStories = [];
+        
+        if (result.status === 'success' && result.data && result.data.length > 0) {
+          // Nếu API trả về kết quả, dùng kết quả API
+          filteredStories = result.data.map(story => ({
+            id: story._id || story.id,
+            title: story.title || 'Không tên',
+            author: story.author || 'Ẩn danh',
+            genres: story.genres || [],
+            status: story.status === 'ongoing' ? 'Đang ra' : story.status === 'completed' ? 'Hoàn thành' : story.status || 'Không rõ',
+            rating: story.rating || 4.5,
+            cover: story.cover || 'https://via.placeholder.com/220x290/4c6ef5/ffffff?text=No+Cover',
+            views: story.views || 0
+          }));
+        } else {
+          // Nếu API không có endpoint search, filter local
+          filteredStories = allStories.filter(story => {
+            const matchesQuery = !query || 
+              story.title.toLowerCase().includes(query) || 
+              story.author.toLowerCase().includes(query) ||
+              story.genres.some(g => g.toLowerCase().includes(query));
+
+            const matchesGenre = !genre || story.genres.includes(genre);
+            const matchesStatus = !status || story.status.toLowerCase() === status.toLowerCase();
+            const matchesRating = !minRating || story.rating >= minRating;
+
+            return matchesQuery && matchesGenre && matchesStatus && matchesRating;
+          });
+        }
+        
+        displayResults(filteredStories, query);
+        
+      } catch (error) {
+        console.error('Lỗi tìm kiếm:', error);
+        
+        // Fallback: filter local nếu API lỗi
+        const filteredStories = allStories.filter(story => {
+          const matchesQuery = !query || 
+            story.title.toLowerCase().includes(query) || 
+            story.author.toLowerCase().includes(query) ||
+            story.genres.some(g => g.toLowerCase().includes(query));
+
+          const matchesGenre = !genre || story.genres.includes(genre);
+          const matchesStatus = !status || story.status.toLowerCase() === status.toLowerCase();
+          const matchesRating = !minRating || story.rating >= minRating;
+
+          return matchesQuery && matchesGenre && matchesStatus && matchesRating;
+        });
+        
+        displayResults(filteredStories, query);
+      }
+    }
+
+    function displayResults(results, query) {
+      searchResults.innerHTML = '';
+      
+      if (results.length === 0) {
+        emptyState.style.display = 'block';
+        resultsInfo.textContent = 'Không tìm thấy kết quả phù hợp';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      resultsInfo.textContent = `Tìm thấy ${results.length} truyện${query ? ` cho "${query}"` : ''}`;
+
+      results.forEach(story => {
+        const card = document.createElement('div');
+        card.className = 'story-card';
+        card.innerHTML = `
+          <img src="${story.cover}" alt="${story.title}" class="story-cover" loading="lazy">
+          <div class="story-info">
+            <div class="story-title">${highlightText(story.title, query)}</div>
+            <div style="font-size:0.9rem;color:var(--text-secondary);margin:6px 0;">
+              ${story.author} • ${story.status}
+            </div>
+            <div class="story-meta">
+              <div class="rating">${'★'.repeat(Math.floor(story.rating))}${'☆'.repeat(5 - Math.floor(story.rating))}</div>
+              <span>${(story.views / 1000).toFixed(0)}k lượt xem</span>
+            </div>
+          </div>
+        `;
+        card.onclick = () => window.location.href = `story-detail.html?id=${story.id}`;
+        searchResults.appendChild(card);
+      });
+    }
+
+    function highlightText(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<mark style="background:#748ffc;color:white;padding:0 4px;border-radius:4px;">$1</mark>');
+    }
+
+    // ==================== THEME ====================
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.querySelector('#themeToggle i');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ==================== TOAST ====================
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+        z-index: 9999;
+        animation: fadeInUp 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'fadeOutDown 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // Thêm CSS animation cho toast
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes fadeOutDown {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Chương 1 - Tên Truyện</title>
+  <meta name="description" content="Đọc chương truyện online miễn phí, giao diện mượt, dark mode hoàn hảo." />
+  <meta property="og:title" content="Chương 1 - Tên Truyện" />
+  <meta property="og:description" content="Đọc chương truyện online miễn phí, giao diện mượt, dark mode hoàn hảo." />
+  <meta property="og:image" content="https://via.placeholder.com/1200x630/4c6ef5/ffffff?text=Moon+Book" />
+  <link rel="canonical" href="https://moonbook.vn/reader.html" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4c6ef5">
+
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;
+      --primary-light: #748ffc;
+      --accent: #38b2ac;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 22px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-size: 1.1rem;
+      --line-height: 1.9;
+      --font-family: 'Roboto', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-family);
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: var(--line-height);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      height: 70px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .back-btn:hover {
+      color: var(--primary-light);
+    }
+
+    .chapter-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 50%;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .control-btn:hover {
+      background: rgba(76, 110, 245, 0.15);
+      color: var(--primary);
+    }
+
+    /* Reader Content */
+    .reader-content {
+      padding: 40px 0;
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+    }
+
+    .reader-content p {
+      margin-bottom: 1.6em;
+      text-align: justify;
+    }
+
+    .chapter-nav {
+      display: flex;
+      justify-content: space-between;
+      margin: 40px 0;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: var(--surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 140px;
+      justify-content: center;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      color: var(--text-secondary);
+    }
+
+    .nav-btn:not(:disabled):hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Settings Panel */
+    .settings-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 0;
+      transform: translateY(100%);
+      transition: var(--transition);
+      z-index: 999;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.1);
+    }
+
+    .settings-panel.active {
+      transform: translateY(0);
+    }
+
+    .settings-inner {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .setting-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+
+    .font-size-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .font-size-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Progress */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--primary);
+      width: 0%;
+      z-index: 1001;
+      transition: width 0.1s ease;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 16px 36px;
+      border-radius: 20px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.45s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      bottom: 80px;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .loading i {
+      margin-right: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .reader-content {
+        padding: 20px 0;
+        font-size: 1.05rem;
+      }
+      .chapter-title {
+        display: none;
+      }
+      .controls {
+        gap: 8px;
+      }
+      .settings-inner {
+        gap: 12px;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="javascript:history.back()" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Quay lại
+      </a>
+      <div class="chapter-title" id="chapterTitle">Chương 1: Thức tỉnh</div>
+      <div class="controls">
+        <!-- Nút mở bình luận -->
+        <button class="control-btn" onclick="openComments()">
+          <i class="fas fa-comments"></i>
+        </button>
+        <button class="control-btn" onclick="toggleSettings()">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button class="control-btn" onclick="toggleTheme()">
+          <i class="fas fa-sun" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Reader Content -->
+  <main class="container">
+    <article class="reader-content" id="chapterContent">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải chương...
+      </div>
+    </article>
+
+    <!-- Chapter Navigation -->
+    <div class="chapter-nav">
+      <button class="nav-btn" id="prevBtn" onclick="prevChapter()" disabled>
+        <i class="fas fa-chevron-left"></i> Chương trước
+      </button>
+      <button class="nav-btn" id="nextBtn" onclick="nextChapter()" disabled>
+        Chương tiếp <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </main>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="container settings-inner">
+      <div class="setting-group">
+        <span>Font:</span> 
+        <button class="font-size-btn active" data-size="1">A</button>
+        <button class="font-size-btn" data-size="1.1">A</button>
+        <button class="font-size-btn" data-size="1.2">A</button>
+      </div>
+      <div class="setting-group">
+        <span>Khoảng cách dòng:</span>
+        <button class="font-size-btn active" data-line="1.8">1.8</button>
+        <button class="font-size-btn" data-line="2">2.0</button>
+        <button class="font-size-btn" data-line="2.2">2.2</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Đã lưu vị trí đọc!</div>
+
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    
+    // Hàm gọi API chung
+    async function fetchAPIData(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: options.method || 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return { status: 'success', data };
+        
+      } catch (error) {
+        console.error('API Error:', error);
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // Hàm lấy thông tin truyện (bao gồm danh sách chương)
+    async function fetchStory(storyId) {
+      const result = await fetchAPIData(`/api/stories/${storyId}`);
+      return result;
+    }
+
+    // Hàm lấy nội dung chương cụ thể
+    async function fetchChapter(storyId, chapNum) {
+      const result = await fetchAPIData(`/api/chapters/${storyId}/${chapNum}`);
+      return result;
+    }
+
+    // Hàm lấy danh sách tất cả truyện (fallback nếu cần)
+    async function fetchAllStories() {
+      const result = await fetchAPIData('/api/stories');
+      return result;
+    }
+    // ====================================================================================
+
+    // ==================== GLOBAL VARIABLES ====================
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('story') || '1';
+    const chapterNum = parseInt(urlParams.get('chap')) || 1;
+    
+    let storyData = null;
+    let currentChapter = null;
+    let chaptersList = [];
+    let isLoading = false;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      updateThemeIcon();
+      await loadStoryData();
+      setupEventListeners();
+      loadReaderSettings();
+      restoreReadingPosition();
+    });
+
+    // ==================== API DATA LOADING ====================
+    async function loadStoryData() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      showLoadingState();
+
+      try {
+        // Lấy thông tin truyện và danh sách chương
+        const storyResult = await fetchStory(storyId);
+        
+        if (storyResult.status === 'error') {
+          throw new Error(storyResult.message || 'Không thể tải thông tin truyện');
+        }
+
+        // Chuyển đổi dữ liệu API sang format nội bộ
+        storyData = {
+          id: storyResult.data._id || storyId,
+          title: storyResult.data.title || 'Không tên',
+          chapters: (storyResult.data.chapters || []).map(ch => ({
+            num: ch.num || 1,
+            title: ch.title || 'Không tên',
+            content: ch.content || '<p>Nội dung trống</p>'
+          }))
+        };
+
+        chaptersList = storyData.chapters;
+        
+        // Lấy nội dung chương hiện tại
+        await loadCurrentChapter();
+        
+      } catch (error) {
+        console.error('Lỗi tải dữ liệu truyện:', error);
+        
+        // Fallback: thử load từ localStorage nếu có
+        const savedStory = localStorage.getItem(`story_${storyId}`);
+        if (savedStory) {
+          storyData = JSON.parse(savedStory);
+          chaptersList = storyData.chapters;
+          await loadCurrentChapter();
+          showToast('Đang hiển thị dữ liệu tạm thời');
+        } else {
+          // Fallback cuối: dùng dữ liệu mẫu
+          useSampleData();
+        }
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    async function loadCurrentChapter() {
+      try {
+        // Thử lấy nội dung chương từ API endpoint riêng
+        const chapterResult = await fetchChapter(storyId, chapterNum);
+        
+        if (chapterResult.status === 'success' && chapterResult.data) {
+          currentChapter = {
+            num: chapterResult.data.num || chapterNum,
+            title: chapterResult.data.title || `Chương ${chapterNum}`,
+            content: chapterResult.data.content || '<p>Nội dung trống</p>'
+          };
+        } else {
+          // Nếu không có endpoint riêng, tìm trong danh sách chương
+          currentChapter = chaptersList.find(c => c.num === chapterNum) || chaptersList[0];
+        }
+        
+        renderChapter();
+        
+      } catch (error) {
+        console.log('Không thể tải nội dung chương riêng, dùng danh sách chương');
+        currentChapter = chaptersList.find(c => c.num === chapterNum) || chaptersList[0];
+        renderChapter();
+      }
+    }
+
+    function useSampleData() {
+      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+      storyData = {
+        id: storyId,
+        title: "Solo Leveling",
+        chapters: [
+          { num: 1, title: "Thức tỉnh", content: `<p>Trong một thế giới mà các cổng kết nối với dungeon xuất hiện...</p><p>Sung Jin-Woo, hunter hạng E yếu nhất, bước vào raid nguy hiểm...</p><p>Không ai ngờ rằng, khoảnh khắc cận tử chính là lúc hệ thống bí ẩn kích hoạt...</p><p>“Chào mừng đến với Hệ Thống Cấp Độ.”</p>` },
+          { num: 2, title: "Hệ thống", content: `<p>Hệ thống cho anh ta nhiệm vụ hàng ngày...</p><p>Push-up 100 lần? Squat 100 lần?</p><p>Jin-Woo cười nhạt: “Đây là trò đùa à?”</p>` },
+          { num: 3, title: "Raid đầu tiên", content: `<p>Chương 3 nội dung...</p>` }
+        ]
+      };
+      chaptersList = storyData.chapters;
+      currentChapter = chaptersList.find(c => c.num === chapterNum) || chaptersList[0];
+      renderChapter();
+      showToast('Đang dùng dữ liệu mẫu');
+    }
+
+    function showLoadingState() {
+      document.getElementById('chapterContent').innerHTML = `
+        <div class="loading">
+          <i class="fas fa-spinner fa-spin"></i> Đang tải chương...
+        </div>
+      `;
+      document.getElementById('prevBtn').disabled = true;
+      document.getElementById('nextBtn').disabled = true;
+    }
+
+    // ==================== RENDERING ====================
+    function renderChapter() {
+      if (!currentChapter) return;
+
+      document.title = `Chương ${currentChapter.num}: ${currentChapter.title} - ${storyData.title}`;
+      document.getElementById('chapterTitle').textContent = `Chương ${currentChapter.num}: ${currentChapter.title}`;
+      document.getElementById('chapterContent').innerHTML = currentChapter.content;
+      document.getElementById('pageTitle').textContent = document.title;
+
+      // Cập nhật trạng thái nút điều hướng
+      const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
+      document.getElementById('prevBtn').disabled = currentIndex <= 0;
+      document.getElementById('nextBtn').disabled = currentIndex >= chaptersList.length - 1;
+
+      // Lưu vào localStorage làm backup
+      localStorage.setItem(`story_${storyId}`, JSON.stringify(storyData));
+      localStorage.setItem(`currentChapter_${storyId}_${chapterNum}`, JSON.stringify(currentChapter));
+    }
+
+    // ==================== NAVIGATION ====================
+    function prevChapter() {
+      const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
+      if (currentIndex > 0) {
+        goToChapter(chaptersList[currentIndex - 1].num);
+      }
+    }
+
+    function nextChapter() {
+      const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
+      if (currentIndex < chaptersList.length - 1) {
+        goToChapter(chaptersList[currentIndex + 1].num);
+      }
+    }
+
+    function goToChapter(num) {
+      window.location.href = `reader.html?story=${storyId}&chap=${num}`;
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function setupEventListeners() {
+      // Cài đặt font size
+      document.querySelectorAll('[data-size]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.documentElement.style.setProperty('--font-size', btn.dataset.size + 'rem');
+          localStorage.setItem('reader_font_size', btn.dataset.size);
+        });
+      });
+
+      // Cài đặt line height
+      document.querySelectorAll('[data-line]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-line]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.documentElement.style.setProperty('--line-height', btn.dataset.line);
+          localStorage.setItem('reader_line_height', btn.dataset.line);
+        });
+      });
+
+      // Phím tắt
+      document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') prevChapter();
+        if (e.key === 'ArrowRight') nextChapter();
+        if (e.key === ' ') {
+          e.preventDefault();
+          window.scrollBy(0, window.innerHeight * 0.8);
+        }
+        if (e.key === 'c' || e.key === 'C') openComments();
+      });
+
+      // Progress bar
+      window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+        document.getElementById('progressBar').style.width = scrolled + '%';
+      });
+
+      // Swipe gestures
+      let touchStartX = 0;
+      document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+      document.addEventListener('touchend', e => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) nextChapter();
+          else prevChapter();
+        }
+      });
+    }
+
+    // ==================== SETTINGS & THEME ====================
+    function loadReaderSettings() {
+      const savedFont = localStorage.getItem('reader_font_size') || '1.1';
+      const savedLine = localStorage.getItem('reader_line_height') || '1.9';
+      document.documentElement.style.setProperty('--font-size', savedFont + 'rem');
+      document.documentElement.style.setProperty('--line-height', savedLine);
+      document.querySelector(`[data-size="${savedFont}"]`)?.classList.add('active');
+      document.querySelector(`[data-line="${savedLine}"]`)?.classList.add('active');
+    }
+
+    function toggleSettings() {
+      document.getElementById('settingsPanel').classList.toggle('active');
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.getElementById('themeIcon');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ==================== COMMENTS & PROGRESS ====================
+    function openComments() {
+      window.location.href = `comments.html?story=${storyId}&chap=${currentChapter.num}`;
+    }
+
+    function saveReadingProgress() {
+      const progress = {
+        storyId,
+        chapter: currentChapter.num,
+        scroll: window.scrollY,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(`progress_${storyId}`, JSON.stringify(progress));
+      showToast('Đã lưu vị trí đọc!');
+    }
+
+    function restoreReadingPosition() {
+      const saved = localStorage.getItem(`progress_${storyId}`);
+      if (saved) {
+        const progress = JSON.parse(saved);
+        if (progress.chapter === currentChapter.num) {
+          setTimeout(() => window.scrollTo(0, progress.scroll), 100);
+        }
+      }
+    }
+
+    // Auto save progress
+    setInterval(saveReadingProgress, 10000);
+    window.addEventListener('beforeunload', saveReadingProgress);
+
+    // ==================== TOAST ====================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

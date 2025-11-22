@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bình luận - Chương 1</title>
+  <meta name="description" content="Bình luận, thảo luận chương truyện cùng cộng đồng." />
+  <meta property="og:title" content="Bình luận - Moon Book" />
+  <meta property="og:description" content="Bình luận, thảo luận chương truyện cùng cộng đồng." />
+  <link rel="canonical" href="https://moonbook.vn/comments.html" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4c6ef5">
+
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;
+      --primary-light: #748ffc;
+      --accent: #38b2ac;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 22px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.8;
+      transition: var(--transition);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      height: 70px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .back-btn:hover {
+      color: var(--primary-light);
+    }
+
+    .chapter-info {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 50%;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--primary);
+      padding: 8px;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      background: rgba(76, 110, 245, 0.15);
+    }
+
+    /* Comment Form */
+    .comment-form {
+      background: var(--surface);
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin: 30px 0;
+    }
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(76, 110, 245, 0.3);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      resize: none;
+      transition: var(--transition);
+      min-height: 100px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(76, 110, 245, 0.15);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-send {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-send:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-cancel {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-cancel:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Comments List */
+    .comments-section {
+      margin: 40px 0;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment-item {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .comment-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .comment-meta {
+      flex: 1;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .comment-time {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .comment-content {
+      margin: 12px 0;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .comment-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      color: var(--primary);
+    }
+
+    .action-btn.liked {
+      color: #fb7185;
+    }
+
+    .reply-form {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 16px;
+      border: 1px dashed var(--border);
+      display: none;
+    }
+
+    .reply-form.active {
+      display: block;
+    }
+
+    .reply-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      resize: none;
+      min-height: 80px;
+    }
+
+    .replies {
+      margin-left: 54px;
+      margin-top: 16px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      color: var(--border);
+    }
+
+    /* Loading State */
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .chapter-info { display: none; }
+      .form-header { flex-direction: column; align-items: flex-start; }
+      .user-avatar { width: 42px; height: 42px; }
+      .replies { margin-left: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="javascript:history.back()" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Quay lại
+      </a>
+      <div class="chapter-info" id="chapterInfo">Chương 1: Thức tỉnh</div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <i class="fas fa-sun"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Comment Form -->
+  <section class="container">
+    <div class="comment-form">
+      <div class="form-header">
+        <div class="user-avatar">MB</div>
+        <div>
+          <div style="font-weight:600;">Bạn</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary);">Tham gia thảo luận</div>
+        </div>
+      </div>
+      <textarea class="form-input" id="commentInput" placeholder="Viết bình luận của bạn..."></textarea>
+      <div class="form-actions">
+        <button class="btn btn-cancel" onclick="cancelComment()">Hủy</button>
+        <button class="btn btn-send" onclick="postComment()">Gửi</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comments List -->
+  <section class="container comments-section">
+    <h3 class="section-title"><i class="fas fa-comments"></i> Bình luận (<span id="commentCount">0</span>)</h3>
+    <div id="commentsList">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải bình luận...
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    
+    // Hàm gọi API chung
+    async function fetchAPIData(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: options.method || 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return { status: 'success', data };
+        
+      } catch (error) {
+        console.error('API Error:', error);
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // ==================== COMMENT API FUNCTIONS ====================
+    // Lấy bình luận từ API
+    async function getCommentsFromAPI(storyId, chapterNum) {
+      const result = await fetchAPIData(`/api/comments/${storyId}/${chapterNum}`);
+      return result;
+    }
+
+    // Gửi bình luận mới
+    async function postCommentToAPI(storyId, chapterNum, comment) {
+      const result = await fetchAPIData('/api/comments', {
+        method: 'POST',
+        body: {
+          storyId,
+          chapterNum,
+          author: comment.author,
+          content: comment.content,
+          timestamp: comment.timestamp
+        }
+      });
+      return result;
+    }
+
+    // Like bình luận
+    async function likeCommentOnAPI(commentId) {
+      const result = await fetchAPIData(`/api/comments/${commentId}/like`, {
+        method: 'PUT'
+      });
+      return result;
+    }
+
+    // Trả lời bình luận
+    async function replyCommentOnAPI(parentId, reply) {
+      const result = await fetchAPIData(`/api/comments/${parentId}/reply`, {
+        method: 'POST',
+        body: {
+          author: reply.author,
+          content: reply.content,
+          timestamp: reply.timestamp
+        }
+      });
+      return result;
+    }
+
+    // Báo cáo bình luận
+    async function reportCommentOnAPI(commentId, reason) {
+      const result = await fetchAPIData(`/api/comments/${commentId}/report`, {
+        method: 'POST',
+        body: { reason }
+      });
+      return result;
+    }
+    // ====================================================================================
+
+    // ==================== GLOBAL VARIABLES ====================
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('story') || '1';
+    const chapterNum = urlParams.get('chap') || '1';
+    const commentKey = `comments_${storyId}_${chapterNum}`;
+    
+    let comments = [];
+    let isLoading = false;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      updateThemeIcon();
+      loadCommentsFromAPI(); // Gọi API thay vì load từ localStorage
+    });
+
+    // ==================== API DATA LOADING ====================
+    async function loadCommentsFromAPI() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      const commentsList = document.getElementById('commentsList');
+      commentsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải bình luận...</div>';
+
+      try {
+        // Gọi API lấy bình luận
+        const result = await getCommentsFromAPI(storyId, chapterNum);
+        
+        if (result.status === 'error') {
+          throw new Error(result.message || 'Không thể tải bình luận');
+        }
+
+        // Chuyển đổi dữ liệu API sang format nội bộ
+        comments = (result.data || []).map(comment => ({
+          id: comment._id || comment.id,
+          author: comment.author || 'Ẩn danh',
+          content: comment.content || '',
+          timestamp: comment.timestamp ? new Date(comment.timestamp).getTime() : Date.now(),
+          likes: comment.likes || 0,
+          liked: false, // Trạng thái like được lưu locally
+          replies: (comment.replies || []).map(reply => ({
+            id: reply._id || reply.id,
+            author: reply.author || 'Ẩn danh',
+            content: reply.content || '',
+            timestamp: reply.timestamp ? new Date(reply.timestamp).getTime() : Date.now(),
+            likes: reply.likes || 0,
+            liked: false
+          }))
+        }));
+
+        // Render giao diện
+        renderComments();
+        
+      } catch (error) {
+        console.error('Lỗi tải bình luận:', error);
+        
+        // Fallback: thử load từ localStorage nếu API lỗi
+        comments = JSON.parse(localStorage.getItem(commentKey) || '[]');
+        renderComments();
+        
+        // Hiển thị thông báo lỗi nhẹ
+        showToast('Không thể kết nối API, đang hiển thị dữ liệu tạm thời');
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    // ==================== RENDERING ====================
+    function renderComments() {
+      const commentsList = document.getElementById('commentsList');
+      const commentCount = document.getElementById('commentCount');
+
+      if (comments.length === 0) {
+        commentsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-comment-slash"></i>
+            <h3>Chưa có bình luận</h3>
+            <p>Hãy là người đầu tiên!</p>
+          </div>
+        `;
+        commentCount.textContent = '0';
+        return;
+      }
+
+      commentCount.textContent = comments.length;
+      commentsList.innerHTML = comments.map((c, i) => createCommentHTML(c, i, 0)).join('');
+    }
+
+    function createCommentHTML(comment, index, depth) {
+      const repliesHTML = comment.replies ? comment.replies.map((r, ri) => createCommentHTML(r, ri, depth + 1)).join('') : '';
+      const indent = depth > 0 ? `margin-left: ${depth * 40}px;` : '';
+
+      return `
+        <div class="comment-item" style="${indent}" data-comment-id="${comment.id}">
+          <div class="comment-header">
+            <div class="comment-avatar">${getInitials(comment.author)}</div>
+            <div class="comment-meta">
+              <div class="comment-author">${escapeHTML(comment.author)}</div>
+              <div class="comment-time">${formatTime(comment.timestamp)}</div>
+            </div>
+          </div>
+          <div class="comment-content">${escapeHTML(comment.content)}</div>
+          <div class="comment-actions">
+            <div class="action-btn ${comment.liked ? 'liked' : ''}" onclick="likeComment(${index}, ${depth})">
+              <i class="fas fa-heart"></i> <span>${comment.likes || 0}</span>
+            </div>
+            <div class="action-btn" onclick="toggleReply(${index}, ${depth})">
+              <i class="fas fa-reply"></i> Trả lời
+            </div>
+            <div class="action-btn" onclick="reportComment(${index}, ${depth})">
+              <i class="fas fa-flag"></i> Báo cáo
+            </div>
+          </div>
+          <div class="reply-form" id="replyForm_${index}_${depth}">
+            <textarea class="reply-input" placeholder="Viết trả lời..."></textarea>
+            <div class="form-actions" style="margin-top:12px;">
+              <button class="btn btn-cancel" onclick="cancelReply(${index}, ${depth})">Hủy</button>
+              <button class="btn btn-send" onclick="postReply(${index}, ${depth})">Gửi</button>
+            </div>
+          </div>
+          <div class="replies">${repliesHTML}</div>
+        </div>
+      `;
+    }
+
+    // ==================== ACTIONS ====================
+    // Gửi bình luận mới
+    async function postComment() {
+      const input = document.getElementById('commentInput');
+      const content = input.value.trim();
+      if (!content) return;
+
+      const newComment = {
+        author: "Người dùng #" + (Math.floor(Math.random() * 9000) + 1000),
+        content,
+        timestamp: Date.now(),
+        likes: 0,
+        liked: false,
+        replies: []
+      };
+
+      // Gọi API trước
+      const result = await postCommentToAPI(storyId, chapterNum, newComment);
+      
+      if (result.status === 'success') {
+        // Thêm vào đầu danh sách
+        comments.unshift({
+          ...newComment,
+          id: result.data.id || result.data._id,
+          timestamp: new Date(result.data.timestamp || newComment.timestamp).getTime()
+        });
+        
+        // Lưu vào localStorage làm backup
+        localStorage.setItem(commentKey, JSON.stringify(comments));
+        
+        // Render lại
+        renderComments();
+        input.value = '';
+        showToast('Đã gửi bình luận!');
+      } else {
+        showToast('Lỗi gửi bình luận, thử lại sau');
+      }
+    }
+
+    function cancelComment() {
+      document.getElementById('commentInput').value = '';
+    }
+
+    // Trả lời bình luận
+    async function postReply(parentIndex, depth) {
+      const parentComment = depth === 0 ? comments[parentIndex] : comments[parentIndex].replies[parentIndex];
+      const parentId = parentComment.id;
+      
+      const input = document.querySelector(`#replyForm_${parentIndex}_${depth} .reply-input`);
+      const content = input.value.trim();
+      if (!content) return;
+
+      const newReply = {
+        author: "Người dùng #" + (Math.floor(Math.random() * 9000) + 1000),
+        content,
+        timestamp: Date.now(),
+        likes: 0,
+        liked: false
+      };
+
+      // Gọi API
+      const result = await replyCommentOnAPI(parentId, newReply);
+      
+      if (result.status === 'success') {
+        // Thêm reply vào comment
+        if (depth === 0) {
+          if (!comments[parentIndex].replies) comments[parentIndex].replies = [];
+          comments[parentIndex].replies.unshift({
+            ...newReply,
+            id: result.data.id || result.data._id,
+            timestamp: new Date(result.data.timestamp || newReply.timestamp).getTime()
+          });
+        }
+        
+        // Lưu vào localStorage
+        localStorage.setItem(commentKey, JSON.stringify(comments));
+        
+        // Render lại
+        renderComments();
+        input.value = '';
+        showToast('Đã trả lời bình luận!');
+      } else {
+        showToast('Lỗi gửi trả lời, thử lại sau');
+      }
+    }
+
+    function toggleReply(parentIndex, depth) {
+      const formId = `replyForm_${parentIndex}_${depth}`;
+      const form = document.getElementById(formId);
+      form.classList.toggle('active');
+    }
+
+    function cancelReply(parentIndex, depth) {
+      document.getElementById(`replyForm_${parentIndex}_${depth}`).classList.remove('active');
+    }
+
+    // Like bình luận
+    async function likeComment(index, depth) {
+      let comment;
+      
+      if (depth === 0) {
+        comment = comments[index];
+      } else {
+        // Tìm comment cha và reply
+        const parentIndex = Math.floor(index / 1000); // Giả sử depth 1
+        const replyIndex = index % 1000;
+        comment = comments[parentIndex].replies[replyIndex];
+      }
+      
+      // Gọi API
+      const result = await likeCommentOnAPI(comment.id);
+      
+      if (result.status === 'success') {
+        // Cập nhật số like từ API
+        comment.likes = result.data.likes || (comment.likes + 1);
+        comment.liked = !comment.liked;
+        
+        // Lưu vào localStorage
+        localStorage.setItem(commentKey, JSON.stringify(comments));
+        
+        // Render lại
+        renderComments();
+      } else {
+        showToast('Lỗi like bình luận, thử lại sau');
+      }
+    }
+
+    // Báo cáo bình luận
+    async function reportComment(index, depth) {
+      const reason = prompt('Lý do báo cáo:');
+      if (!reason) return;
+
+      let comment;
+      if (depth === 0) {
+        comment = comments[index];
+      } else {
+        const parentIndex = Math.floor(index / 1000);
+        const replyIndex = index % 1000;
+        comment = comments[parentIndex].replies[replyIndex];
+      }
+
+      const result = await reportCommentOnAPI(comment.id, reason);
+      
+      if (result.status === 'success') {
+        showToast('Đã báo cáo bình luận');
+      } else {
+        showToast('Lỗi báo cáo, thử lại sau');
+      }
+    }
+
+    // ==================== UTILITIES ====================
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    function escapeHTML(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatTime(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (minutes < 1) return 'Vừa xong';
+      if (minutes < 60) return `${minutes} phút trước`;
+      if (hours < 24) return `${hours} giờ trước`;
+      return `${days} ngày trước`;
+    }
+
+    // Toast
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+        z-index: 9999;
+        animation: fadeInUp 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'fadeOutDown 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // ==================== THEME ====================
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.querySelector('#themeToggle i');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', initTheme);
+  </script>
+  
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes fadeOutDown {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    }
+  </style>
+</body>
+</html>

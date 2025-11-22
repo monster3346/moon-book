@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Tên Truyện - Moon Book</title>
+  <meta name="description" content="Đọc truyện online miễn phí, giao diện đẹp, dark mode hoàn hảo." />
+  <meta property="og:title" content="Tên Truyện - Moon Book" />
+  <meta property="og:description" content="Đọc truyện online miễn phí, giao diện đẹp, dark mode hoàn hảo." />
+  <meta property="og:image" content="https://via.placeholder.com/1200x630/4c6ef5/ffffff?text=Moon+Book" />
+  <meta property="og:url" content="https://moonbook.vn/story-detail.html" />
+  <link rel="canonical" href="https://moonbook.vn/story-detail.html" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4c6ef5">
+
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;
+      --primary-light: #748ffc;
+      --accent: #38b2ac;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 22px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.8;
+      transition: var(--transition);
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      height: 78px;
+    }
+
+    .logo {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo i {
+      font-size: 2.4rem;
+      color: var(--primary);
+      filter: drop-shadow(0 4px 8px rgba(76, 110, 245, 0.3));
+      transition: var(--transition);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.55rem;
+      cursor: pointer;
+      color: var(--primary);
+      padding: 10px;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      background: rgba(76, 110, 245, 0.15);
+      transform: scale(1.12);
+    }
+
+    /* Main Content */
+    .story-detail {
+      padding: 40px 0;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .story-poster {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      background: linear-gradient(45deg, #dbeafe, #ccfbf1);
+    }
+
+    .story-info h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+
+    .story-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-item i {
+      color: var(--primary);
+    }
+
+    .story-summary {
+      background: var(--surface);
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+      line-height: 1.9;
+      box-shadow: var(--shadow);
+    }
+
+    .story-actions {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition);
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-bookmark {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 2px solid var(--border);
+    }
+
+    .btn-bookmark.active {
+      color: #fb7185;
+      border-color: #fb7185;
+      background: rgba(251, 113, 133, 0.1);
+    }
+
+    .btn-bookmark:hover {
+      border-color: #fb7185;
+      color: #fb7185;
+    }
+
+    /* Chapters */
+    .chapters-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chapter-list {
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .chapter-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .chapter-item:hover {
+      background: rgba(76, 110, 245, 0.08);
+      padding-left: 24px;
+    }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-time {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* Rating */
+    .rating {
+      display: flex;
+      gap: 4px;
+      font-size: 1.4rem;
+    }
+
+    .rating .star {
+      color: #fbbf24;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .rating .star:hover {
+      transform: scale(1.2);
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .loading i {
+      margin-right: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .story-detail {
+        grid-template-columns: 1fr;
+      }
+      .story-poster {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .story-info h1 {
+        font-size: 1.9rem;
+      }
+      .story-actions {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Back to top */
+    #backToTop {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--primary);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 100;
+      cursor: pointer;
+      font-size: 1.3rem;
+    }
+
+    #backToTop.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 18px 40px;
+      border-radius: 20px;
+      font-weight: 600;
+      box-shadow: 0 14px 36px rgba(76, 110, 245, 0.3);
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.45s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      bottom: 48px;
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+
+    .error-state i {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <i class="fas fa-book-open"></i> Moon Book
+      </a>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <i class="fas fa-sun"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+    <section class="story-detail" id="storyDetail">
+      <!-- Loading State -->
+      <div class="loading" id="loadingState" style="display: flex; justify-content: center; align-items: center; min-height: 400px; grid-column: 1/-1;">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải thông tin truyện...
+      </div>
+      
+      <!-- Content sẽ được render bằng JavaScript -->
+    </section>
+
+    <!-- Chapters -->
+    <section class="chapters-section" id="chaptersSection" style="display: none;">
+      <h3 class="section-title"><i class="fas fa-list"></i> Danh sách chương</h3>
+      <div class="chapter-list" id="chapterList">
+        <!-- JS sẽ render -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Back to top -->
+  <button id="backToTop" onclick="scrollToTop()">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Đã thêm vào yêu thích!</div>
+
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    
+    // Hàm gọi API chung
+    async function fetchAPIData(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: options.method || 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return { status: 'success', data };
+        
+      } catch (error) {
+        console.error('API Error:', error);
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // Hàm lấy chi tiết truyện theo ID
+    async function fetchStoryDetail(storyId) {
+      const result = await fetchAPIData(`/api/stories/${storyId}`);
+      return result;
+    }
+    // ====================================================================================
+
+    // ==================== GLOBAL VARIABLES ====================
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('id') || '1';
+    let storyData = null;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      updateThemeIcon();
+      await loadStoryFromAPI();
+      setupEventListeners();
+    });
+
+    // ==================== API DATA LOADING ====================
+    async function loadStoryFromAPI() {
+      try {
+        // Gọi API lấy chi tiết truyện
+        const result = await fetchStoryDetail(storyId);
+        
+        if (result.status === 'error') {
+          throw new Error(result.message || 'Không thể tải thông tin truyện');
+        }
+
+        // Chuyển đổi dữ liệu API sang format UI
+        const apiData = result.data;
+        
+        storyData = {
+          id: apiData._id || storyId,
+          title: apiData.title || 'Không tên',
+          author: apiData.author || 'Ẩn danh',
+          genres: apiData.genres || [],
+          summary: apiData.description || 'Không có mô tả',
+          cover: apiData.cover || 'https://via.placeholder.com/320x460/4c6ef5/ffffff?text=No+Cover',
+          views: apiData.views || 0,
+          rating: 4.5, // API không có rating, mặc định
+          chapters: (apiData.chapters || []).map((ch, index) => ({
+            num: ch.num || index + 1,
+            title: ch.title || `Chương ${index + 1}`,
+            time: ch.updatedAt ? formatTime(new Date(ch.updatedAt).getTime()) : 'Vừa cập nhật'
+          }))
+        };
+
+        // Lưu vào localStorage làm backup
+        localStorage.setItem(`story_detail_${storyId}`, JSON.stringify(storyData));
+        
+        // Render giao diện
+        renderStoryDetail();
+        
+      } catch (error) {
+        console.error('Lỗi tải truyện:', error);
+        
+        // Fallback: thử load từ localStorage
+        const saved = localStorage.getItem(`story_detail_${storyId}`);
+        if (saved) {
+          storyData = JSON.parse(saved);
+          renderStoryDetail();
+          showToast('Đang hiển thị dữ liệu tạm thời');
+        } else {
+          // Fallback cuối: dùng dữ liệu mẫu
+          useSampleData();
+        }
+      }
+    }
+
+    function useSampleData() {
+      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+      storyData = {
+        id: storyId,
+        title: "Solo Leveling",
+        author: "Chugong",
+        genres: ["Hành động", "Huyền huyễn", "System"],
+        summary: "Trong một thế giới mà các cổng kết nối với dungeon xuất hiện, những hunter với sức mạnh siêu nhiên bảo vệ nhân loại. Sung Jin-Woo, một hunter hạng E yếu nhất, nhận được hệ thống bí ẩn giúp anh ta trở thành mạnh nhất.",
+        cover: "https://via.placeholder.com/320x460/4c6ef5/ffffff?text=Solo",
+        views: 2850000,
+        rating: 4.9,
+        chapters: [
+          { num: 1, title: "Chương 1: Thức tỉnh", time: "2 ngày trước" },
+          { num: 2, title: "Chương 2: Hệ thống", time: "1 ngày trước" },
+          { num: 3, title: "Chương 3: Raid đầu tiên", time: "3 giờ trước" },
+        ]
+      };
+      renderStoryDetail();
+      showToast('Đang dùng dữ liệu mẫu');
+    }
+
+    // ==================== RENDERING ====================
+    function renderStoryDetail() {
+      if (!storyData) return;
+
+      // Ẩn loading
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('chaptersSection').style.display = 'block';
+
+      // Render title
+      document.title = `${storyData.title} - Moon Book`;
+      document.getElementById('pageTitle').textContent = storyData.title;
+
+      // Render poster
+      const posterImg = document.createElement('img');
+      posterImg.src = storyData.cover;
+      posterImg.alt = storyData.title;
+      posterImg.className = 'story-poster';
+
+      // Render info
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'story-info';
+      infoDiv.innerHTML = `
+        <h1>${storyData.title}</h1>
+        <div class="story-meta">
+          <div class="meta-item"><i class="fas fa-user"></i> <span id="storyAuthor">${storyData.author}</span></div>
+          <div class="meta-item"><i class="fas fa-tags"></i> <span id="storyGenres">${storyData.genres.join(', ')}</span></div>
+          <div class="meta-item"><i class="fas fa-eye"></i> <span id="storyViews">${storyData.views.toLocaleString()}</span> lượt xem</div>
+          <div class="meta-item"><i class="fas fa-star"></i> <span id="storyRating">${storyData.rating}</span>/5</div>
+        </div>
+        <div class="story-summary" id="storySummary">${storyData.summary}</div>
+        <div class="story-actions">
+          <button class="btn btn-primary" onclick="readNow()">
+            <i class="fas fa-play"></i> Đọc ngay
+          </button>
+          <button class="btn btn-outline" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Quay lại
+          </button>
+          <button class="btn btn-bookmark" id="bookmarkBtn" onclick="toggleBookmark()">
+            <i class="fas fa-heart"></i> <span id="bookmarkText">${isBookmarked() ? 'Đã yêu thích' : 'Yêu thích'}</span>
+          </button>
+        </div>
+        <div class="rating" id="ratingStars"></div>
+      `;
+
+      // Xóa loading và append content
+      const storyDetail = document.getElementById('storyDetail');
+      storyDetail.innerHTML = '';
+      storyDetail.appendChild(posterImg);
+      storyDetail.appendChild(infoDiv);
+
+      // Render rating stars
+      const ratingContainer = document.getElementById('ratingStars');
+      ratingContainer.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.innerHTML = i <= Math.floor(storyData.rating) ? '★' : '☆';
+        star.onclick = () => rateStory(i);
+        ratingContainer.appendChild(star);
+      }
+
+      // Render chapters
+      renderChapters();
+    }
+
+    function renderChapters() {
+      const chapterList = document.getElementById('chapterList');
+      chapterList.innerHTML = '';
+      
+      storyData.chapters.forEach(chap => {
+        const item = document.createElement('div');
+        item.className = 'chapter-item';
+        item.innerHTML = `
+          <div>
+            <strong>Chương ${chap.num}: ${chap.title}</strong>
+          </div>
+          <div class="chapter-time">${chap.time}</div>
+        `;
+        item.onclick = () => readChapter(chap.num);
+        chapterList.appendChild(item);
+      });
+    }
+
+    // ==================== ACTIONS ====================
+    function readNow() {
+      window.location.href = `reader.html?story=${storyData.id}&chap=1`;
+    }
+
+    function readChapter(num) {
+      window.location.href = `reader.html?story=${storyData.id}&chap=${num}`;
+    }
+
+    function isBookmarked() {
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(storyData.id);
+    }
+
+    function toggleBookmark() {
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      const index = bookmarks.indexOf(storyData.id);
+      const bookmarkBtn = document.getElementById('bookmarkBtn');
+      const bookmarkText = document.getElementById('bookmarkText');
+      
+      if (index > -1) {
+        bookmarks.splice(index, 1);
+        showToast('Đã xóa khỏi yêu thích');
+        bookmarkBtn.classList.remove('active');
+        bookmarkText.textContent = 'Yêu thích';
+      } else {
+        bookmarks.push(storyData.id);
+        showToast('Đã thêm vào yêu thích!');
+        bookmarkBtn.classList.add('active');
+        bookmarkText.textContent = 'Đã yêu thích';
+      }
+      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+
+    function rateStory(rating) {
+      alert(`Bạn đánh giá ${rating} sao cho "${storyData.title}"`);
+      // Có thể gọi API submit rating ở đây
+    }
+
+    // ==================== UTILITIES ====================
+    function formatTime(timestamp) {
+      const now = Date.now();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (minutes < 1) return 'Vừa cập nhật';
+      if (minutes < 60) return `${minutes} phút trước`;
+      if (hours < 24) return `${hours} giờ trước`;
+      return `${days} ngày trước`;
+    }
+
+    // ==================== THEME ====================
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.querySelector('#themeToggle i');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ==================== BACK TO TOP ====================
+    function setupEventListeners() {
+      window.addEventListener('scroll', () => {
+        const btn = document.getElementById('backToTop');
+        if (window.scrollY > 500) {
+          btn.classList.add('show');
+        } else {
+          btn.classList.remove('show');
+        }
+      });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==================== TOAST ====================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

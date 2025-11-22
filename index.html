@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="description" content="Moon Book - Đọc truyện online với logo sách mở, giao diện mát mắt, dark mode hoàn hảo." />
+  <title>Moon Book - Đọc Truyện Mát Mắt</title>
+
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+  <style>
+    :root {
+      /* === TONE MÁT MẮT, HÀI HÒA - LIGHT MODE === */
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;        /* Xanh dương tinh tế */
+      --primary-light: #748ffc;
+      --accent: #38b2ac;         /* Xanh ngọc dịu */
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 22px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      /* === DARK MODE - TỐI MỀM, KHÔNG CHÓI === */
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.8;
+      transition: var(--transition);
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(76, 110, 245, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(56, 178, 172, 0.05) 0%, transparent 20%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    /* === FLOATING ANIMATED BACKGROUND === */
+    .floating-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .floating-shape {
+      position: absolute;
+      opacity: 0.03;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .floating-shape:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      border-radius: 50%;
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-shape:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      background: var(--accent);
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      top: 60%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-100px) rotate(180deg); }
+    }
+
+    /* === HEADER - GLASSMORPHISM === */
+    header {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      background: rgba(var(--surface-rgb), 0.9);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      height: 78px;
+    }
+
+    /* === LOGO: FLOATING ANIMATION === */
+    .logo {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .logo:hover {
+      transform: translateY(-4px);
+    }
+
+    .logo i {
+      font-size: 2.4rem;
+      color: var(--primary);
+      filter: drop-shadow(0 4px 8px rgba(76, 110, 245, 0.3));
+      transition: var(--transition);
+      animation: float-logo 3s ease-in-out infinite;
+    }
+
+    @keyframes float-logo {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .logo:hover i {
+      transform: rotate(5deg) scale(1.1);
+      animation-play-state: paused;
+    }
+
+    /* === THEME TOGGLE - ROTATING RIPPLE === */
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.55rem;
+      cursor: pointer;
+      color: var(--primary);
+      transition: var(--transition);
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: var(--primary);
+      border-radius: 50%;
+      transition: width 0.6s, height 0.6s;
+      transform: translate(-50%, -50%);
+    }
+
+    .theme-toggle:hover::before {
+      width: 100%;
+      height: 100%;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.12) rotate(180deg);
+    }
+
+    .theme-toggle:hover i {
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* === HAMBURGER - MORPHING === */
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 12px;
+      transition: var(--transition);
+      background: rgba(76, 110, 245, 0.1);
+    }
+
+    .hamburger:hover {
+      background: rgba(76, 110, 245, 0.2);
+    }
+
+    .hamburger span {
+      width: 100%;
+      height: 4px;
+      background: var(--text-primary);
+      border-radius: 3px;
+      transition: var(--transition);
+      transform-origin: center;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(9px, -8px);
+    }
+
+    /* === SIDE MENU - SLIDE IN WITH BLUR === */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -340px;
+      width: 320px;
+      height: 100vh;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: -14px 0 50px rgba(76, 110, 245, 0.15);
+      z-index: 1000;
+      transition: right 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 100px 28px 28px;
+      overflow-y: auto;
+      border-left: 1px solid var(--border);
+    }
+
+    .side-menu.active {
+      right: 0;
+    }
+
+    .menu-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .user-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.45rem;
+      box-shadow: 0 6px 18px rgba(76, 110, 245, 0.3);
+      animation: pulse-avatar 2s infinite;
+    }
+
+    @keyframes pulse-avatar {
+      0% { box-shadow: 0 0 0 0 rgba(76, 110, 245, 0.4); }
+      70% { box-shadow: 0 0 0 20px rgba(76, 110, 245, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(76, 110, 245, 0); }
+    }
+
+    .menu-list {
+      list-style: none;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(76, 110, 245, 0.12), transparent);
+      transition: left 0.4s;
+    }
+
+    .menu-item:hover::before {
+      left: 0;
+    }
+
+    .menu-item:hover {
+      color: var(--primary);
+      transform: translateX(8px);
+    }
+
+    .menu-item i {
+      font-size: 1.5rem;
+      width: 32px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+
+    .menu-item:hover i {
+      transform: scale(1.3);
+      color: var(--primary);
+    }
+
+    .menu-item span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .menu-footer {
+      margin-top: auto;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    /* === OVERLAY - FADE & BLUR === */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 18, 33, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 999;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* === SEARCH - GLOW EFFECT === */
+    .search-section {
+      padding: 34px 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-container {
+      max-width: 660px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 17px 22px;
+      border: 2.5px solid var(--border);
+      border-radius: 18px;
+      font-size: 1.08rem;
+      outline: none;
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 6px rgba(76, 110, 245, 0.18);
+    }
+
+    /* === SLIDER - PARALLAX === */
+    .slider-container {
+      margin: 44px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      height: 440px;
+      position: relative;
+    }
+
+    .swiper-slide {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 7s ease;
+    }
+
+    .swiper-slide-active .story-cover {
+      transform: scale(1.1);
+    }
+
+    /* === SECTIONS - STAGGER ANIMATIONS === */
+    .section {
+      margin: 68px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 40px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fade-in-up 0.8s ease forwards;
+    }
+
+    .section:nth-child(1) .section-title { animation-delay: 0.2s; }
+    .section:nth-child(2) .section-title { animation-delay: 0.4s; }
+
+    @keyframes fade-in-up {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-title::after {
+      content: '';
+      width: 110px;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 4px;
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 32px;
+    }
+
+    /* === STORY CARDS - 3D HOVER === */
+    .story-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transform-style: preserve-3d;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: card-appear 0.6s ease forwards;
+    }
+
+    .story-card:nth-child(1) { animation-delay: 0.1s; }
+    .story-card:nth-child(2) { animation-delay: 0.2s; }
+    .story-card:nth-child(3) { animation-delay: 0.3s; }
+    .story-card:nth-child(4) { animation-delay: 0.4s; }
+    .story-card:nth-child(5) { animation-delay: 0.5s; }
+    .story-card:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes card-appear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .story-card:hover {
+      transform: translateY(-14px) rotateX(5deg);
+      box-shadow: 0 24px 48px rgba(76, 110, 245, 0.18);
+      border-color: var(--primary);
+    }
+
+    .story-cover {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      background: linear-gradient(45deg, #dbeafe, #ccfbf1);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .story-card:hover .story-cover {
+      transform: scale(1.15);
+    }
+
+    .story-info {
+      padding: 22px;
+    }
+
+    .story-title {
+      font-weight: 600;
+      font-size: 1.12rem;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: var(--text-primary);
+      transition: color 0.3s;
+    }
+
+    .story-card:hover .story-title {
+      color: var(--primary);
+    }
+
+    .story-meta {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bookmark {
+      font-size: 1.55rem;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-secondary);
+      position: relative;
+    }
+
+    .bookmark:hover {
+      transform: scale(1.2);
+    }
+
+    .bookmark.active {
+      color: #fb7185;
+      animation: heartbeat 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.45); }
+    }
+
+    /* === TOAST - SLIDE UP === */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 18px 40px;
+      border-radius: 20px;
+      font-weight: 600;
+      box-shadow: 0 14px 36px rgba(76, 110, 245, 0.3);
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* === FOOTER === */
+    footer {
+      background: var(--surface);
+      text-align: center;
+      padding: 44px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+      margin-top: auto;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .slider-container { height: 280px; }
+      .stories-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
+      .search-input { padding: 15px 20px; font-size: 1rem; }
+      .section-title { font-size: 1.7rem; }
+      .logo { font-size: 1.8rem; }
+      .logo i { font-size: 2rem; }
+    }
+
+    /* === LOADING SKELETON === */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: var(--radius);
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .story-card.skeleton .story-cover {
+      background: linear-gradient(45deg, #dbeafe, #ccfbf1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Animated Background -->
+  <div class="floating-bg">
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Side Menu -->
+  <aside class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <div class="user-avatar">MB</div>
+      <div>
+        <div style="font-weight:600; font-size:1.25rem;">Moon Book</div>
+        <div style="font-size:0.94rem;color:var(--text-secondary);">Chào mừng bạn!</div>
+      </div>
+    </div>
+
+    <ul class="menu-list">
+      <li class="menu-item" onclick="login()"><i class="fas fa-sign-in-alt"></i> Đăng nhập</li>
+      <li class="menu-item" onclick="showBookmarks()"><i class="fas fa-heart"></i> Yêu thích</li>
+      <li class="menu-item" onclick="showHistory()"><i class="fas fa-history"></i> Lịch sử</li>
+      <li class="menu-item" onclick="showNotifications()"><i class="fas fa-bell"></i> Thông báo</li>
+      <li class="menu-item"><i class="fas fa-cog"></i> Cài đặt</li>
+      <li class="menu-item"><i class="fas fa-question-circle"></i> Hỗ trợ</li>
+    </ul>
+
+    <div class="menu-footer">
+      © 2025 <strong>Moon Book</strong><br>
+      Logo sách mở • Giao diện mát mắt
+    </div>
+  </aside>
+
+  <!-- Header -->
+  <header id="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <i class="fas fa-book-open"></i> Moon Book
+      </a>
+      <div style="display: flex; align-items: center; gap: 18px;">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+          <i class="fas fa-sun"></i>
+        </button>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <section class="search-section">
+    <div class="container search-container">
+      <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Slider -->
+    <div class="slider-container">
+      <div class="swiper" id="heroSlider">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1360&h=440&fit=crop" alt="Truyện hot" class="story-cover">
+          </div>
+          <div class="swiper-slide">
+            <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=1360&h=440&fit=crop" alt="Chap mới" class="story-cover">
+          </div>
+          <div class="swiper-slide">
+            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1360&h=440&fit=crop" alt="Xu hướng" class="story-cover">
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <section class="section">
+      <h2 class="section-title">Mới Cập Nhật</h2>
+      <div class="stories-grid" id="newUpdates"></div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Truyện Hot</h2>
+      <div class="stories-grid" id="hotStories"></div>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Đã thêm vào yêu thích!</div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 <strong>Moon Book</strong> – Logo sách mở, giao diện mát mắt, dark mode hoàn hảo</p>
+  </footer>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    
+    // Hàm gọi API chung
+    async function fetchAPIData(endpoint) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // Hàm lấy tất cả truyện từ API
+    async function fetchAllStories() {
+      return await fetchAPIData('/api/stories');
+    }
+
+    // ==================== GLOBAL VARIABLES ====================
+    let allStories = []; // Lưu trữ tất cả truyện từ API
+    let isLoading = false;
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initSwiper();
+      loadStoriesFromAPI(); // Gọi API thay vì load dữ liệu cứng
+      setupMenu();
+      setupSearch();
+      updateThemeIcon();
+    });
+
+    // ==================== API DATA LOADING ====================
+    async function loadStoriesFromAPI() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      const containers = ['newUpdates', 'hotStories'];
+      
+      // Hiển thị skeleton loading
+      containers.forEach(section => {
+        const container = document.getElementById(section);
+        container.innerHTML = Array(6).fill('').map(() => `
+          <div class="story-card skeleton">
+            <div class="story-cover" style="background: linear-gradient(45deg, #dbeafe, #ccfbf1);"></div>
+            <div class="story-info">
+              <div class="story-title" style="background: #e2e8f0; height: 20px; border-radius: 4px;"></div>
+              <div style="background: #e2e8f0; height: 16px; border-radius: 4px; margin-top: 8px;"></div>
+            </div>
+          </div>
+        `).join('');
+      });
+
+      try {
+        // Gọi API lấy dữ liệu
+        const apiData = await fetchAllStories();
+        
+        // Kiểm tra lỗi
+        if (apiData.status === 'error') {
+          throw new Error(apiData.message || 'Không thể tải dữ liệu');
+        }
+
+        // Chuyển đổi dữ liệu API sang format giống cũ
+        allStories = (apiData || []).map((story, index) => ({
+          id: story._id || `story-${index}`,
+          title: story.title || 'Không có tên',
+          cover: story.cover || 'https://i.imgur.com/7h4j2Yk.jpg', // Ảnh mặc định nếu không có cover
+          summary: story.description || (story.genres && story.genres.join(', ')) || 'Không có mô tả',
+          chapters: story.chapters ? story.chapters.length : 0,
+          section: index % 2 === 0 ? 'hotStories' : 'newUpdates' // Phân bổ đều vào 2 section
+        }));
+
+        // Tải xong, render giao diện
+        renderStories();
+        showToast('Đã tải dữ liệu thành công!');
+        
+      } catch (error) {
+        console.error('Lỗi tải truyện:', error);
+        showToast('Lỗi tải dữ liệu, đang dùng dữ liệu mẫu...');
+        
+        // Fallback dữ liệu mẫu nếu API lỗi
+        allStories = getSampleStories();
+        renderStories();
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+    function getSampleStories() {
+      return [
+        { id: '1', title: 'Solo Leveling', cover: 'https://i.imgur.com/7h4j2Yk.jpg', summary: 'Từ thợ săn yếu nhất đến mạnh nhất thế giới...', chapters: 200, section: 'hotStories' },
+        { id: '2', title: 'One Piece', cover: 'https://i.imgur.com/Xq5uj3j.jpg', summary: 'Hành trình tìm kiếm kho báu vĩ đại nhất...', chapters: 1100, section: 'newUpdates' },
+        { id: '3', title: 'Attack on Titan', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chiến đấu vì tự do trước bọn khổng lồ...', chapters: 139, section: 'hotStories' },
+        { id: '4', title: 'Jujutsu Kaisen', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Thế giới chú thuật đầy nguy hiểm...', chapters: 220, section: 'newUpdates' },
+        { id: '5', title: 'Demon Slayer', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Hành trình diệt quỷ và cứu em gái...', chapters: 205, section: 'hotStories' },
+        { id: '6', title: 'My Hero Academia', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Trường học siêu anh hùng đầy thách thức...', chapters: 380, section: 'newUpdates' },
+        { id: '7', title: 'Chainsaw Man', cover: 'https://i.imgur.com/3h5y9kQ.jpg', summary: 'Quỷ cưa và hợp đồng đẫm máu...', chapters: 140, section: 'hotStories' },
+        { id: '8', title: 'Spy x Family', cover: 'https://i.imgur.com/8j2k1lP.jpg', summary: 'Gia đình gián điệp hoàn hảo...', chapters: 80, section: 'newUpdates' },
+        { id: '9', title: 'Black Clover', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chàng trai không phép thuật trở thành vua...', chapters: 360, section: 'hotStories' },
+        { id: '10', title: 'Tokyo Revengers', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Du hành thời gian để thay đổi tương lai...', chapters: 270, section: 'newUpdates' },
+        { id: '11', title: 'One Punch Man', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Siêu anh hùng quá mạnh tìm kiếm đối thủ...', chapters: 180, section: 'hotStories' },
+        { id: '12', title: 'Death Note', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Cuộc chiến trí tuệ với quyển sổ thiên mệnh...', chapters: 108, section: 'newUpdates' }
+      ];
+    }
+
+    // ==================== RENDERING ====================
+    function renderStories() {
+      const sections = ['newUpdates', 'hotStories'];
+      
+      sections.forEach(section => {
+        const container = document.getElementById(section);
+        const sectionStories = allStories.filter(s => s.section === section);
+        
+        // Xóa skeleton và render dữ liệu thật
+        container.innerHTML = '';
+        sectionStories.forEach(story => container.appendChild(createCard(story)));
+      });
+    }
+
+    // ==================== UI COMPONENTS ====================
+    function initSwiper() {
+      new Swiper('#heroSlider', {
+        loop: true,
+        autoplay: { delay: 5000, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        effect: 'fade',
+        fadeEffect: { crossFade: true },
+        speed: 1000,
+        on: {
+          init: function() {
+            this.slides.forEach(slide => {
+              const img = slide.querySelector('.story-cover');
+              if (img) {
+                img.style.transition = 'transform 7s ease';
+              }
+            });
+          },
+          slideChange: function() {
+            const prevSlide = this.slides[this.previousIndex];
+            const currSlide = this.slides[this.activeIndex];
+            if (prevSlide) {
+              const prevImg = prevSlide.querySelector('.story-cover');
+              if (prevImg) prevImg.style.transform = 'scale(1)';
+            }
+            if (currSlide) {
+              const currImg = currSlide.querySelector('.story-cover');
+              if (currImg) currImg.style.transform = 'scale(1.1)';
+            }
+          }
+        }
+      });
+    }
+
+    function createCard(story) {
+      const card = document.createElement('div');
+      card.className = 'story-card';
+      card.innerHTML = `
+        <img src="${story.cover}" alt="${story.title}" class="story-cover" loading="lazy">
+        <div class="story-info">
+          <div class="story-title">${story.title}</div>
+          <p style="font-size:0.94rem;color:var(--text-secondary);margin:8px 0;">${story.summary}</p>
+          <div class="story-meta">
+            <span>Chương ${story.chapters}</span>
+            <span class="bookmark ${isBookmarked(story.id) ? 'active' : ''}" onclick="toggleBookmark(event, '${story.id}')"><i class="fas fa-heart"></i></span>
+          </div>
+        </div>
+      `;
+      card.onclick = (e) => {
+        if (!e.target.closest('.bookmark')) {
+          window.location.href = `story-detail.html?id=${story.id}`;
+        }
+      };
+      return card;
+    }
+
+    // ==================== BOOKMARKS ====================
+    function toggleBookmark(e, id) {
+      e.stopPropagation();
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      const index = bookmarks.indexOf(id);
+      const bookmarkEl = e.currentTarget;
+      
+      if (index > -1) {
+        bookmarks.splice(index, 1);
+        bookmarkEl.classList.remove('active');
+        showToast('Đã xóa khỏi yêu thích');
+      } else {
+        bookmarks.push(id);
+        bookmarkEl.classList.add('active');
+        showToast('Đã thêm vào yêu thích!');
+      }
+      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+
+    function isBookmarked(id) {
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(id);
+    }
+
+    // ==================== SEARCH ====================
+    let searchTimeout;
+    function setupSearch() {
+      const input = document.getElementById('searchInput');
+      input.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+          const q = e.target.value.trim();
+          if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+        }
+      });
+      
+      input.addEventListener('input', e => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          filterStories();
+        }, 300);
+      });
+    }
+
+    function filterStories() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const allGrids = document.querySelectorAll('.stories-grid');
+      allGrids.forEach(grid => {
+        grid.style.display = query ? 'none' : 'grid';
+      });
+      
+      if (query) {
+        const filtered = allStories.filter(s => s.title.toLowerCase().includes(query));
+        const resultContainer = document.getElementById('hotStories');
+        resultContainer.style.display = 'grid';
+        resultContainer.innerHTML = '';
+        filtered.forEach(story => resultContainer.appendChild(createCard(story)));
+      } else {
+        renderStories();
+      }
+    }
+
+    // ==================== MENU & THEME ====================
+    function setupMenu() {
+      const hamburger = document.getElementById('hamburger');
+      const sideMenu = document.getElementById('sideMenu');
+      const overlay = document.getElementById('overlay');
+
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        sideMenu.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = sideMenu.classList.contains('active') ? 'hidden' : '';
+      });
+
+      overlay.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        sideMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+      const surface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
+      const rgb = surface.match(/\d+/g);
+      if (rgb) {
+        document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
+      }
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      const surface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
+      const rgb = surface.match(/\d+/g);
+      if (rgb) {
+        document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
+      }
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.querySelector('#themeToggle i');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ==================== MENU ACTIONS ====================
+    function login() { alert('Chức năng đăng nhập'); }
+    function showBookmarks() { alert('Danh sách yêu thích'); }
+    function showHistory() { alert('Lịch sử đọc'); }
+    function showNotifications() { alert('Thông báo mới'); }
+  </script>
+</body>
+</html>
