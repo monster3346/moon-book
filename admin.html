@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Moon Book ♡</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff0f8; padding: 20px; color: #333; line-height: 1.6; }
+    h1 { color: #ff69b4; text-align: center; }
+    input, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ffb6c1; border-radius: 8px; box-sizing: border-box; }
+    textarea { height: 320px; resize: vertical; font-family: inherit; }
+    button { background: #ff69b4; color: white; font-size: 16px; cursor: pointer; border: none; }
+    button:hover { background: #ff1493; }
+    .story-item { background: #fff; padding: 18px; margin: 15px 0; border-radius: 12px; box-shadow: 0 3px 12px rgba(255,105,180,0.15); }
+    .actions button { width: auto; padding: 8px 16px; margin: 5px; font-size: 14px; }
+    #status { text-align: center; font-weight: bold; margin: 15px 0; color: #ff69b4; }
+    .count { text-align: center; font-size: 18px; color: #ff69b4; margin: 20px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Moon Book ♡</h1>
+
+  <!-- Thêm truyện mới -->
+  <input type="text" id="title" placeholder="Tiêu đề truyện">
+  <textarea id="content" placeholder="Dán toàn bộ nội dung truyện vào đây nha..."></textarea>
+  <button onclick="addStory()">Thêm truyện mới ♡</button>
+  <div id="status"></div>
+
+  <hr style="border: 1px dashed #ffb6c1; margin: 30px 0;">
+
+  <!-- Danh sách truyện -->
+  <h2>Danh sách truyện (<span id="total">0</span> truyện)</h2>
+  <div id="storyList">Đang tải danh sách truyện...</div>
+
+  <script>
+    // ←←← LINK API MỚI CỦA EM ĐÂY NÈ (đã đúng 100%)
+    const API = "https://truyen-cute-api.onrender.com/api/stories";
+
+    // Load danh sách truyện
+    async function loadStories() {
+      try {
+        const res = await fetch(API);
+        const stories = await res.json();
+        const list = document.getElementById("storyList");
+        document.getElementById("total").textContent = stories.length;
+
+        if (stories.length === 0) {
+          list.innerHTML = "<i style='color:#ff69b4;'>Chưa có truyện nào, thêm truyện đầu tiên đi nào ♡</i>";
+          return;
+        }
+
+        list.innerHTML = stories.map(s => `
+          <div class="story-item">
+            <strong style="font-size:18px;">${s.title}</strong><br><br>
+            <div class="actions">
+              <button onclick="editStory('${s._id}', '${escapeHtml(s.title)}', \`${escapeContent(s.content)}\`)">Sửa</button>
+              <button onclick="deleteStory('${s._id}')" style="background:#ff4444;">Xóa</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (err) {
+        document.getElementById("storyList").innerHTML = "Lỗi kết nối API rồi huhu...";
+      }
+    }
+
+    // Thêm truyện mới
+    async function addStory() {
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+      if (!title || !content) return alert("Phải điền đủ tiêu đề + nội dung nha ♡");
+
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+      });
+
+      if (res.ok) {
+        document.getElementById("status").innerHTML = "Thêm truyện thành công rồi nè!!! ♡♡♡";
+        document.getElementById("title").value = "";
+        document.getElementById("content").value = "";
+        loadStories();
+      } else {
+        alert("Có lỗi rồi huhu...");
+      }
+    }
+
+    // Sửa truyện
+    function editStory(id, title, content) {
+      document.getElementById("title").value = title;
+      document.getElementById("content").value = content;
+      document.getElementById("status").innerHTML = `
+        <button onclick="updateStory('${id}')">Cập nhật truyện này</button>
+        <button onclick="cancelEdit()" style="background:#666;">Hủy</button>
+      `;
+    }
+
+    async function updateStory(id) {
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+      });
+
+      document.getElementById("status").innerHTML = "Cập nhật thành công rồi nè ♡";
+      cancelEdit();
+      loadStories();
+    }
+
+    function cancelEdit() {
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+      document.getElementById("status").innerHTML = "";
+    }
+
+    // Xóa truyện
+    async function deleteStory(id) {
+      if (!confirm("Xóa truyện này thật luôn nha? Không lấy lại được đâu đó ♡")) return;
+      await fetch(`${API}/${id}`, { method: "DELETE" });
+      loadStories();
+    }
+
+    // Helper để tránh lỗi khi có dấu nháy trong nội dung
+    function escapeHtml(text) { return text.replace(/'/g, "\\'"); }
+    function escapeContent(text) { return text.replace(/`/g, "\\`").replace(/\${/g, "\\${"); }
+
+    // Load ngay khi mở trang
+    loadStories();
+  </script>
+</body>
+</html>
