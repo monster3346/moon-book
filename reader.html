@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="pageTitle">Chương 1 - Tên Truyện</title>
+  <title id="pageTitle">Đang tải...</title>
   <meta name="description" content="Đọc chương truyện online miễn phí, giao diện mượt, dark mode hoàn hảo." />
-  <meta property="og:title" content="Chương 1 - Tên Truyện" />
+  <meta property="og:title" content="Đọc truyện online" />
   <meta property="og:description" content="Đọc chương truyện online miễn phí, giao diện mượt, dark mode hoàn hảo." />
   <meta property="og:image" content="https://via.placeholder.com/1200x630/4c6ef5/ffffff?text=Moon+Book" />
   <link rel="canonical" href="https://moonbook.vn/reader.html" />
@@ -147,6 +147,22 @@
     .reader-content p {
       margin-bottom: 1.6em;
       text-align: justify;
+    }
+
+    /* Comic images */
+    .comic-image {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: var(--surface);
+    }
+
+    [data-theme="dark"] .comic-image {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .chapter-nav {
@@ -318,9 +334,8 @@
       <a href="javascript:history.back()" class="back-btn">
         <i class="fas fa-arrow-left"></i> Quay lại
       </a>
-      <div class="chapter-title" id="chapterTitle">Chương 1: Thức tỉnh</div>
+      <div class="chapter-title" id="chapterTitle">Đang tải...</div>
       <div class="controls">
-        <!-- Nút mở bình luận -->
         <button class="control-btn" onclick="openComments()">
           <i class="fas fa-comments"></i>
         </button>
@@ -372,7 +387,7 @@
   </div>
 
   <!-- Toast -->
-  <div class="toast" id="toast">Đã lưu vị trí đọc!</div>
+  <div class="toast" id="toast"></div>
 
   <script>
     // ==================== API CONFIGURATION ====================
@@ -403,27 +418,21 @@
     }
 
     // Hàm lấy thông tin truyện (bao gồm danh sách chương)
-    async function fetchStory(storyId) {
-      const result = await fetchAPIData(`/api/stories/${storyId}`);
+    async function fetchStory(slug) {
+      const result = await fetchAPIData(`/api/stories/${slug}`);
       return result;
     }
 
     // Hàm lấy nội dung chương cụ thể
-    async function fetchChapter(storyId, chapNum) {
-      const result = await fetchAPIData(`/api/chapters/${storyId}/${chapNum}`);
-      return result;
-    }
-
-    // Hàm lấy danh sách tất cả truyện (fallback nếu cần)
-    async function fetchAllStories() {
-      const result = await fetchAPIData('/api/stories');
+    async function fetchChapter(slug, chapNum) {
+      const result = await fetchAPIData(`/api/chapters/${slug}/${chapNum}`);
       return result;
     }
     // ====================================================================================
 
     // ==================== GLOBAL VARIABLES ====================
     const urlParams = new URLSearchParams(window.location.search);
-    const storyId = urlParams.get('story') || '1';
+    const slug = urlParams.get('slug') || 'demo-truyen';
     const chapterNum = parseInt(urlParams.get('chap')) || 1;
     
     let storyData = null;
@@ -450,7 +459,7 @@
 
       try {
         // Lấy thông tin truyện và danh sách chương
-        const storyResult = await fetchStory(storyId);
+        const storyResult = await fetchStory(slug);
         
         if (storyResult.status === 'error') {
           throw new Error(storyResult.message || 'Không thể tải thông tin truyện');
@@ -458,15 +467,19 @@
 
         // Chuyển đổi dữ liệu API sang format nội bộ
         storyData = {
-          id: storyResult.data._id || storyId,
+          slug: slug,
           title: storyResult.data.title || 'Không tên',
           chapters: (storyResult.data.chapters || []).map(ch => ({
             num: ch.num || 1,
             title: ch.title || 'Không tên',
-            content: ch.content || '<p>Nội dung trống</p>'
+            content: ch.content || null,
+            images: ch.images || null
           }))
         };
 
+        // Sắp xếp chương theo số tăng dần
+        storyData.chapters.sort((a, b) => a.num - b.num);
+        
         chaptersList = storyData.chapters;
         
         // Lấy nội dung chương hiện tại
@@ -476,7 +489,7 @@
         console.error('Lỗi tải dữ liệu truyện:', error);
         
         // Fallback: thử load từ localStorage nếu có
-        const savedStory = localStorage.getItem(`story_${storyId}`);
+        const savedStory = localStorage.getItem(`story_${slug}`);
         if (savedStory) {
           storyData = JSON.parse(savedStory);
           chaptersList = storyData.chapters;
@@ -494,13 +507,14 @@
     async function loadCurrentChapter() {
       try {
         // Thử lấy nội dung chương từ API endpoint riêng
-        const chapterResult = await fetchChapter(storyId, chapterNum);
+        const chapterResult = await fetchChapter(slug, chapterNum);
         
         if (chapterResult.status === 'success' && chapterResult.data) {
           currentChapter = {
             num: chapterResult.data.num || chapterNum,
             title: chapterResult.data.title || `Chương ${chapterNum}`,
-            content: chapterResult.data.content || '<p>Nội dung trống</p>'
+            content: chapterResult.data.content || null,
+            images: chapterResult.data.images || null
           };
         } else {
           // Nếu không có endpoint riêng, tìm trong danh sách chương
@@ -517,14 +531,14 @@
     }
 
     function useSampleData() {
-      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+      // Dữ liệu mẫu fallback
       storyData = {
-        id: storyId,
+        slug: slug,
         title: "Solo Leveling",
         chapters: [
-          { num: 1, title: "Thức tỉnh", content: `<p>Trong một thế giới mà các cổng kết nối với dungeon xuất hiện...</p><p>Sung Jin-Woo, hunter hạng E yếu nhất, bước vào raid nguy hiểm...</p><p>Không ai ngờ rằng, khoảnh khắc cận tử chính là lúc hệ thống bí ẩn kích hoạt...</p><p>“Chào mừng đến với Hệ Thống Cấp Độ.”</p>` },
-          { num: 2, title: "Hệ thống", content: `<p>Hệ thống cho anh ta nhiệm vụ hàng ngày...</p><p>Push-up 100 lần? Squat 100 lần?</p><p>Jin-Woo cười nhạt: “Đây là trò đùa à?”</p>` },
-          { num: 3, title: "Raid đầu tiên", content: `<p>Chương 3 nội dung...</p>` }
+          { num: 1, title: "Thức tỉnh", content: "Trong một thế giới mà các cổng kết nối với dungeon xuất hiện...\n\nSung Jin-Woo, hunter hạng E yếu nhất, bước vào raid nguy hiểm...\n\nKhông ai ngờ rằng, khoảnh khắc cận tử chính là lúc hệ thống bí ẩn kích hoạt...\n\n“Chào mừng đến với Hệ thống Cấp Độ.”", images: null },
+          { num: 2, title: "Hệ thống", content: "Hệ thống cho anh ta nhiệm vụ hàng ngày...\n\nPush-up 100 lần? Squat 100 lần?\n\nJin-Woo cười nhạt: “Đây là trò đùa à?”", images: null },
+          { num: 3, title: "Raid đầu tiên", content: null, images: ["https://via.placeholder.com/800x1200/4c6ef5/ffffff?text=Trang+1", "https://via.placeholder.com/800x1200/38b2ac/ffffff?text=Trang+2"] }
         ]
       };
       chaptersList = storyData.chapters;
@@ -549,7 +563,25 @@
 
       document.title = `Chương ${currentChapter.num}: ${currentChapter.title} - ${storyData.title}`;
       document.getElementById('chapterTitle').textContent = `Chương ${currentChapter.num}: ${currentChapter.title}`;
-      document.getElementById('chapterContent').innerHTML = currentChapter.content;
+      
+      // Ưu tiên hiển thị nội dung chữ
+      if (currentChapter.content) {
+        // Thay \n thành <br> cho đẹp
+        const formattedContent = currentChapter.content.replace(/\n/g, '<br>');
+        document.getElementById('chapterContent').innerHTML = `<p>${formattedContent}</p>`;
+      } 
+      // Nếu không có chữ nhưng có ảnh (truyện tranh)
+      else if (currentChapter.images && currentChapter.images.length > 0) {
+        const imagesHtml = currentChapter.images.map(img => 
+          `<img src="${img}" class="comic-image" loading="lazy" alt="Trang truyện">`
+        ).join('');
+        document.getElementById('chapterContent').innerHTML = imagesHtml;
+      } 
+      // Nếu không có gì
+      else {
+        document.getElementById('chapterContent').innerHTML = '<p>Nội dung trống</p>';
+      }
+      
       document.getElementById('pageTitle').textContent = document.title;
 
       // Cập nhật trạng thái nút điều hướng
@@ -558,8 +590,8 @@
       document.getElementById('nextBtn').disabled = currentIndex >= chaptersList.length - 1;
 
       // Lưu vào localStorage làm backup
-      localStorage.setItem(`story_${storyId}`, JSON.stringify(storyData));
-      localStorage.setItem(`currentChapter_${storyId}_${chapterNum}`, JSON.stringify(currentChapter));
+      localStorage.setItem(`story_${slug}`, JSON.stringify(storyData));
+      localStorage.setItem(`currentChapter_${slug}_${chapterNum}`, JSON.stringify(currentChapter));
     }
 
     // ==================== NAVIGATION ====================
@@ -578,7 +610,7 @@
     }
 
     function goToChapter(num) {
-      window.location.href = `reader.html?story=${storyId}&chap=${num}`;
+      window.location.href = `?slug=${slug}&chap=${num}`;
     }
 
     // ==================== EVENT LISTENERS ====================
@@ -675,22 +707,22 @@
 
     // ==================== COMMENTS & PROGRESS ====================
     function openComments() {
-      window.location.href = `comments.html?story=${storyId}&chap=${currentChapter.num}`;
+      window.location.href = `comments.html?slug=${slug}&chap=${currentChapter.num}`;
     }
 
     function saveReadingProgress() {
       const progress = {
-        storyId,
+        slug,
         chapter: currentChapter.num,
         scroll: window.scrollY,
         timestamp: Date.now()
       };
-      localStorage.setItem(`progress_${storyId}`, JSON.stringify(progress));
+      localStorage.setItem(`progress_${slug}`, JSON.stringify(progress));
       showToast('Đã lưu vị trí đọc!');
     }
 
     function restoreReadingPosition() {
-      const saved = localStorage.getItem(`progress_${storyId}`);
+      const saved = localStorage.getItem(`progress_${slug}`);
       if (saved) {
         const progress = JSON.parse(saved);
         if (progress.chapter === currentChapter.num) {

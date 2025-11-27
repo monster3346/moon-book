@@ -8,7 +8,6 @@
   <meta property="og:title" content="Tên Truyện - Moon Book" />
   <meta property="og:description" content="Đọc truyện online miễn phí, giao diện đẹp, dark mode hoàn hảo." />
   <meta property="og:image" content="https://via.placeholder.com/1200x630/4c6ef5/ffffff?text=Moon+Book" />
-  <meta property="og:url" content="https://moonbook.vn/story-detail.html" />
   <link rel="canonical" href="https://moonbook.vn/story-detail.html" />
 
   <!-- Google Fonts -->
@@ -179,6 +178,7 @@
       display: flex;
       gap: 16px;
       margin-bottom: 32px;
+      flex-wrap: wrap;
     }
 
     .btn {
@@ -192,6 +192,7 @@
       transition: var(--transition);
       border: none;
       font-size: 1rem;
+      text-decoration: none;
     }
 
     .btn-primary {
@@ -239,6 +240,7 @@
       padding: 24px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
+      margin-top: 40px;
     }
 
     .section-title {
@@ -266,6 +268,8 @@
       align-items: center;
       transition: var(--transition);
       cursor: pointer;
+      text-decoration: none;
+      color: var(--text-primary);
     }
 
     .chapter-item:hover {
@@ -417,7 +421,7 @@
   <main class="container">
     <section class="story-detail" id="storyDetail">
       <!-- Loading State -->
-      <div class="loading" id="loadingState" style="display: flex; justify-content: center; align-items: center; min-height: 400px; grid-column: 1/-1;">
+      <div class="loading" id="loadingState" style="grid-column: 1/-1;">
         <i class="fas fa-spinner fa-spin"></i> Đang tải thông tin truyện...
       </div>
       
@@ -439,7 +443,7 @@
   </button>
 
   <!-- Toast -->
-  <div class="toast" id="toast">Đã thêm vào yêu thích!</div>
+  <div class="toast" id="toast"></div>
 
   <script>
     // ==================== API CONFIGURATION ====================
@@ -469,16 +473,16 @@
       }
     }
 
-    // Hàm lấy chi tiết truyện theo ID
-    async function fetchStoryDetail(storyId) {
-      const result = await fetchAPIData(`/api/stories/${storyId}`);
+    // Hàm lấy chi tiết truyện theo slug
+    async function fetchStoryDetail(slug) {
+      const result = await fetchAPIData(`/api/stories/${slug}`);
       return result;
     }
     // ====================================================================================
 
     // ==================== GLOBAL VARIABLES ====================
     const urlParams = new URLSearchParams(window.location.search);
-    const storyId = urlParams.get('id') || '1';
+    const slug = urlParams.get('id') || 'demo-truyen';
     let storyData = null;
 
     // ==================== INITIALIZATION ====================
@@ -493,7 +497,7 @@
     async function loadStoryFromAPI() {
       try {
         // Gọi API lấy chi tiết truyện
-        const result = await fetchStoryDetail(storyId);
+        const result = await fetchStoryDetail(slug);
         
         if (result.status === 'error') {
           throw new Error(result.message || 'Không thể tải thông tin truyện');
@@ -502,8 +506,19 @@
         // Chuyển đổi dữ liệu API sang format UI
         const apiData = result.data;
         
+        // Lọc và sắp xếp chương
+        const chapters = (apiData.chapters || [])
+          .map((ch, index) => ({
+            num: ch.num || index + 1,
+            title: ch.title || `Chương ${index + 1}`,
+            time: ch.updatedAt ? formatTime(new Date(ch.updatedAt).getTime()) : 'Vừa cập nhật',
+            content: ch.content || null,
+            images: ch.images || null
+          }))
+          .sort((a, b) => a.num - b.num); // Sắp xếp theo số chương tăng dần
+        
         storyData = {
-          id: apiData._id || storyId,
+          slug: slug,
           title: apiData.title || 'Không tên',
           author: apiData.author || 'Ẩn danh',
           genres: apiData.genres || [],
@@ -511,15 +526,11 @@
           cover: apiData.cover || 'https://via.placeholder.com/320x460/4c6ef5/ffffff?text=No+Cover',
           views: apiData.views || 0,
           rating: 4.5, // API không có rating, mặc định
-          chapters: (apiData.chapters || []).map((ch, index) => ({
-            num: ch.num || index + 1,
-            title: ch.title || `Chương ${index + 1}`,
-            time: ch.updatedAt ? formatTime(new Date(ch.updatedAt).getTime()) : 'Vừa cập nhật'
-          }))
+          chapters: chapters
         };
 
         // Lưu vào localStorage làm backup
-        localStorage.setItem(`story_detail_${storyId}`, JSON.stringify(storyData));
+        localStorage.setItem(`story_detail_${slug}`, JSON.stringify(storyData));
         
         // Render giao diện
         renderStoryDetail();
@@ -528,7 +539,7 @@
         console.error('Lỗi tải truyện:', error);
         
         // Fallback: thử load từ localStorage
-        const saved = localStorage.getItem(`story_detail_${storyId}`);
+        const saved = localStorage.getItem(`story_detail_${slug}`);
         if (saved) {
           storyData = JSON.parse(saved);
           renderStoryDetail();
@@ -541,9 +552,9 @@
     }
 
     function useSampleData() {
-      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
+      // Dữ liệu mẫu fallback
       storyData = {
-        id: storyId,
+        slug: slug,
         title: "Solo Leveling",
         author: "Chugong",
         genres: ["Hành động", "Huyền huyễn", "System"],
@@ -552,9 +563,9 @@
         views: 2850000,
         rating: 4.9,
         chapters: [
-          { num: 1, title: "Chương 1: Thức tỉnh", time: "2 ngày trước" },
-          { num: 2, title: "Chương 2: Hệ thống", time: "1 ngày trước" },
-          { num: 3, title: "Chương 3: Raid đầu tiên", time: "3 giờ trước" },
+          { num: 1, title: "Thức tỉnh", time: "2 ngày trước", content: "Nội dung chương 1...", images: null },
+          { num: 2, title: "Hệ thống", time: "1 ngày trước", content: "Nội dung chương 2...", images: null },
+          { num: 3, title: "Raid đầu tiên", time: "3 giờ trước", content: null, images: ["https://via.placeholder.com/800x1200/4c6ef5/ffffff?text=Trang+1"] }
         ]
       };
       renderStoryDetail();
@@ -585,21 +596,22 @@
       infoDiv.innerHTML = `
         <h1>${storyData.title}</h1>
         <div class="story-meta">
-          <div class="meta-item"><i class="fas fa-user"></i> <span id="storyAuthor">${storyData.author}</span></div>
-          <div class="meta-item"><i class="fas fa-tags"></i> <span id="storyGenres">${storyData.genres.join(', ')}</span></div>
-          <div class="meta-item"><i class="fas fa-eye"></i> <span id="storyViews">${storyData.views.toLocaleString()}</span> lượt xem</div>
-          <div class="meta-item"><i class="fas fa-star"></i> <span id="storyRating">${storyData.rating}</span>/5</div>
+          <div class="meta-item"><i class="fas fa-user"></i> <span>${storyData.author}</span></div>
+          <div class="meta-item"><i class="fas fa-tags"></i> <span>${storyData.genres.join(', ')}</span></div>
+          <div class="meta-item"><i class="fas fa-eye"></i> <span>${storyData.views.toLocaleString()}</span> lượt xem</div>
+          <div class="meta-item"><i class="fas fa-star"></i> <span>${storyData.rating}</span>/5</div>
         </div>
-        <div class="story-summary" id="storySummary">${storyData.summary}</div>
+        <div class="story-summary">${storyData.summary}</div>
         <div class="story-actions">
-          <button class="btn btn-primary" onclick="readNow()">
-            <i class="fas fa-play"></i> Đọc ngay
-          </button>
+          <!-- NÚT ĐỌC TRUYỆN CHÍNH -->
+          <a class="btn btn-primary" href="reader.html?slug=${storyData.slug}&chap=1">
+            <i class="fas fa-play"></i> Đọc truyện
+          </a>
           <button class="btn btn-outline" onclick="window.history.back()">
             <i class="fas fa-arrow-left"></i> Quay lại
           </button>
-          <button class="btn btn-bookmark" id="bookmarkBtn" onclick="toggleBookmark()">
-            <i class="fas fa-heart"></i> <span id="bookmarkText">${isBookmarked() ? 'Đã yêu thích' : 'Yêu thích'}</span>
+          <button class="btn btn-bookmark ${isBookmarked() ? 'active' : ''}" onclick="toggleBookmark()">
+            <i class="fas fa-heart"></i> <span>${isBookmarked() ? 'Đã yêu thích' : 'Yêu thích'}</span>
           </button>
         </div>
         <div class="rating" id="ratingStars"></div>
@@ -622,7 +634,7 @@
         ratingContainer.appendChild(star);
       }
 
-      // Render chapters
+      // Render danh sách chương
       renderChapters();
     }
 
@@ -630,38 +642,37 @@
       const chapterList = document.getElementById('chapterList');
       chapterList.innerHTML = '';
       
+      // Kiểm tra nếu không có chương
+      if (storyData.chapters.length === 0) {
+        chapterList.innerHTML = '<div class="chapter-item">Chưa có chương nào</div>';
+        return;
+      }
+      
+      // Render từng chương
       storyData.chapters.forEach(chap => {
-        const item = document.createElement('div');
+        const item = document.createElement('a');
         item.className = 'chapter-item';
+        item.href = `reader.html?slug=${storyData.slug}&chap=${chap.num}`;
         item.innerHTML = `
           <div>
             <strong>Chương ${chap.num}: ${chap.title}</strong>
           </div>
           <div class="chapter-time">${chap.time}</div>
         `;
-        item.onclick = () => readChapter(chap.num);
         chapterList.appendChild(item);
       });
     }
 
     // ==================== ACTIONS ====================
-    function readNow() {
-      window.location.href = `reader.html?story=${storyData.id}&chap=1`;
-    }
-
-    function readChapter(num) {
-      window.location.href = `reader.html?story=${storyData.id}&chap=${num}`;
-    }
-
     function isBookmarked() {
-      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(storyData.id);
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(storyData.slug);
     }
 
     function toggleBookmark() {
       const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      const index = bookmarks.indexOf(storyData.id);
-      const bookmarkBtn = document.getElementById('bookmarkBtn');
-      const bookmarkText = document.getElementById('bookmarkText');
+      const index = bookmarks.indexOf(storyData.slug);
+      const bookmarkBtn = document.querySelector('.btn-bookmark');
+      const bookmarkText = bookmarkBtn.querySelector('span');
       
       if (index > -1) {
         bookmarks.splice(index, 1);
@@ -669,7 +680,7 @@
         bookmarkBtn.classList.remove('active');
         bookmarkText.textContent = 'Yêu thích';
       } else {
-        bookmarks.push(storyData.id);
+        bookmarks.push(storyData.slug);
         showToast('Đã thêm vào yêu thích!');
         bookmarkBtn.classList.add('active');
         bookmarkText.textContent = 'Đã yêu thích';

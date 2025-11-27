@@ -17,14 +17,13 @@
 
   <style>
     :root {
-      /* === TONE MÁT MẮT, HÀI HÒA - LIGHT MODE === */
       --bg: #f9fbfd;
       --surface: #ffffff;
       --text-primary: #1a202c;
       --text-secondary: #718096;
-      --primary: #4c6ef5;        /* Xanh dương tinh tế */
+      --primary: #4c6ef5;
       --primary-light: #748ffc;
-      --accent: #38b2ac;         /* Xanh ngọc dịu */
+      --accent: #38b2ac;
       --border: #e2e8f0;
       --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
       --radius: 22px;
@@ -32,7 +31,6 @@
     }
 
     [data-theme="dark"] {
-      /* === DARK MODE - TỐI MỀM, KHÔNG CHÓI === */
       --bg: #0a1221;
       --surface: #1a2332;
       --text-primary: #e2e8f0;
@@ -67,8 +65,6 @@
     }
 
     body {
-      display: flex;
-      flex-direction: column;
       background: 
         radial-gradient(circle at 10% 20%, rgba(76, 110, 245, 0.05) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(56, 178, 172, 0.05) 0%, transparent 20%),
@@ -83,7 +79,6 @@
       flex: 1;
     }
 
-    /* === FLOATING ANIMATED BACKGROUND === */
     .floating-bg {
       position: fixed;
       top: 0;
@@ -126,7 +121,6 @@
       50% { transform: translateY(-100px) rotate(180deg); }
     }
 
-    /* === HEADER - GLASSMORPHISM === */
     header {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -151,7 +145,6 @@
       height: 78px;
     }
 
-    /* === LOGO: FLOATING ANIMATION === */
     .logo {
       font-size: 2.1rem;
       font-weight: 700;
@@ -187,7 +180,6 @@
       animation-play-state: paused;
     }
 
-    /* === THEME TOGGLE - ROTATING RIPPLE === */
     .theme-toggle {
       background: none;
       border: none;
@@ -232,7 +224,6 @@
       z-index: 1;
     }
 
-    /* === HAMBURGER - MORPHING === */
     .hamburger {
       display: flex;
       flex-direction: column;
@@ -270,7 +261,6 @@
       transform: rotate(-45deg) translate(9px, -8px);
     }
 
-    /* === SIDE MENU - SLIDE IN WITH BLUR === */
     .side-menu {
       position: fixed;
       top: 0;
@@ -389,7 +379,6 @@
       color: var(--text-secondary);
     }
 
-    /* === OVERLAY - FADE & BLUR === */
     .overlay {
       position: fixed;
       top: 0;
@@ -410,7 +399,6 @@
       visibility: visible;
     }
 
-    /* === SEARCH - GLOW EFFECT === */
     .search-section {
       padding: 34px 0;
       background: var(--surface);
@@ -446,7 +434,6 @@
       box-shadow: 0 0 0 6px rgba(76, 110, 245, 0.18);
     }
 
-    /* === SLIDER - PARALLAX === */
     .slider-container {
       margin: 44px 0;
       border-radius: var(--radius);
@@ -472,7 +459,6 @@
       transform: scale(1.1);
     }
 
-    /* === SECTIONS - STAGGER ANIMATIONS === */
     .section {
       margin: 68px 0;
     }
@@ -517,7 +503,6 @@
       gap: 32px;
     }
 
-    /* === STORY CARDS - 3D HOVER === */
     .story-card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -614,7 +599,6 @@
       50% { transform: scale(1.45); }
     }
 
-    /* === TOAST - SLIDE UP === */
     .toast {
       position: fixed;
       bottom: 32px;
@@ -638,7 +622,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* === FOOTER === */
     footer {
       background: var(--surface);
       text-align: center;
@@ -649,7 +632,6 @@
       margin-top: auto;
     }
 
-    /* === RESPONSIVE === */
     @media (max-width: 768px) {
       .slider-container { height: 280px; }
       .stories-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
@@ -659,7 +641,6 @@
       .logo i { font-size: 2rem; }
     }
 
-    /* === LOADING SKELETON === */
     .skeleton {
       background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
       background-size: 200% 100%;
@@ -671,24 +652,17 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-
-    .story-card.skeleton .story-cover {
-      background: linear-gradient(45deg, #dbeafe, #ccfbf1);
-    }
   </style>
 </head>
 <body>
 
-  <!-- Floating Animated Background -->
   <div class="floating-bg">
     <div class="floating-shape"></div>
     <div class="floating-shape"></div>
   </div>
 
-  <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Side Menu -->
   <aside class="side-menu" id="sideMenu">
     <div class="menu-header">
       <div class="user-avatar">MB</div>
@@ -713,7 +687,6 @@
     </div>
   </aside>
 
-  <!-- Header -->
   <header id="header">
     <div class="container header-inner">
       <a href="#" class="logo">
@@ -732,7 +705,6 @@
     </div>
   </header>
 
-  <!-- Search -->
   <section class="search-section">
     <div class="container search-container">
       <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
@@ -740,7 +712,6 @@
   </section>
 
   <main class="container">
-    <!-- Slider -->
     <div class="slider-container">
       <div class="swiper" id="heroSlider">
         <div class="swiper-wrapper">
@@ -758,7 +729,6 @@
       </div>
     </div>
 
-    <!-- Sections -->
     <section class="section">
       <h2 class="section-title">Mới Cập Nhật</h2>
       <div class="stories-grid" id="newUpdates"></div>
@@ -770,28 +740,21 @@
     </section>
   </main>
 
-  <!-- Toast -->
   <div class="toast" id="toast">Đã thêm vào yêu thích!</div>
 
-  <!-- Footer -->
   <footer>
     <p>© 2025 <strong>Moon Book</strong> – Logo sách mở, giao diện mát mắt, dark mode hoàn hảo</p>
   </footer>
 
-  <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <script>
-    // ==================== API CONFIGURATION ====================
     const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
     
-    // Hàm gọi API chung
     async function fetchAPIData(endpoint) {
       try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return await response.json();
       } catch (error) {
         console.error('API Error:', error);
@@ -799,33 +762,28 @@
       }
     }
 
-    // Hàm lấy tất cả truyện từ API
     async function fetchAllStories() {
       return await fetchAPIData('/api/stories');
     }
 
-    // ==================== GLOBAL VARIABLES ====================
-    let allStories = []; // Lưu trữ tất cả truyện từ API
+    let allStories = [];
     let isLoading = false;
 
-    // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
       initSwiper();
-      loadStoriesFromAPI(); // Gọi API thay vì load dữ liệu cứng
+      loadStoriesFromAPI();
       setupMenu();
       setupSearch();
       updateThemeIcon();
     });
 
-    // ==================== API DATA LOADING ====================
     async function loadStoriesFromAPI() {
       if (isLoading) return;
       
       isLoading = true;
       const containers = ['newUpdates', 'hotStories'];
       
-      // Hiển thị skeleton loading
       containers.forEach(section => {
         const container = document.getElementById(section);
         container.innerHTML = Array(6).fill('').map(() => `
@@ -840,33 +798,26 @@
       });
 
       try {
-        // Gọi API lấy dữ liệu
         const apiData = await fetchAllStories();
         
-        // Kiểm tra lỗi
-        if (apiData.status === 'error') {
-          throw new Error(apiData.message || 'Không thể tải dữ liệu');
-        }
+        if (apiData.status === 'error') throw new Error(apiData.message || 'Không thể tải dữ liệu');
 
-        // Chuyển đổi dữ liệu API sang format giống cũ
+        // CHUYỂN ĐỔI DỮ LIỆU API - DÙNG SLUG THAY VÌ ID
         allStories = (apiData || []).map((story, index) => ({
-          id: story._id || `story-${index}`,
+          slug: story.slug || story._id || `story-${index}`, // DÙNG SLUG LÀM KHÓA CHÍNH
           title: story.title || 'Không có tên',
-          cover: story.cover || 'https://i.imgur.com/7h4j2Yk.jpg', // Ảnh mặc định nếu không có cover
+          cover: story.cover || 'https://i.imgur.com/7h4j2Yk.jpg',
           summary: story.description || (story.genres && story.genres.join(', ')) || 'Không có mô tả',
           chapters: story.chapters ? story.chapters.length : 0,
-          section: index % 2 === 0 ? 'hotStories' : 'newUpdates' // Phân bổ đều vào 2 section
+          section: index % 2 === 0 ? 'hotStories' : 'newUpdates'
         }));
 
-        // Tải xong, render giao diện
         renderStories();
         showToast('Đã tải dữ liệu thành công!');
         
       } catch (error) {
         console.error('Lỗi tải truyện:', error);
         showToast('Lỗi tải dữ liệu, đang dùng dữ liệu mẫu...');
-        
-        // Fallback dữ liệu mẫu nếu API lỗi
         allStories = getSampleStories();
         renderStories();
       } finally {
@@ -874,39 +825,33 @@
       }
     }
 
-    // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
     function getSampleStories() {
       return [
-        { id: '1', title: 'Solo Leveling', cover: 'https://i.imgur.com/7h4j2Yk.jpg', summary: 'Từ thợ săn yếu nhất đến mạnh nhất thế giới...', chapters: 200, section: 'hotStories' },
-        { id: '2', title: 'One Piece', cover: 'https://i.imgur.com/Xq5uj3j.jpg', summary: 'Hành trình tìm kiếm kho báu vĩ đại nhất...', chapters: 1100, section: 'newUpdates' },
-        { id: '3', title: 'Attack on Titan', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chiến đấu vì tự do trước bọn khổng lồ...', chapters: 139, section: 'hotStories' },
-        { id: '4', title: 'Jujutsu Kaisen', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Thế giới chú thuật đầy nguy hiểm...', chapters: 220, section: 'newUpdates' },
-        { id: '5', title: 'Demon Slayer', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Hành trình diệt quỷ và cứu em gái...', chapters: 205, section: 'hotStories' },
-        { id: '6', title: 'My Hero Academia', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Trường học siêu anh hùng đầy thách thức...', chapters: 380, section: 'newUpdates' },
-        { id: '7', title: 'Chainsaw Man', cover: 'https://i.imgur.com/3h5y9kQ.jpg', summary: 'Quỷ cưa và hợp đồng đẫm máu...', chapters: 140, section: 'hotStories' },
-        { id: '8', title: 'Spy x Family', cover: 'https://i.imgur.com/8j2k1lP.jpg', summary: 'Gia đình gián điệp hoàn hảo...', chapters: 80, section: 'newUpdates' },
-        { id: '9', title: 'Black Clover', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chàng trai không phép thuật trở thành vua...', chapters: 360, section: 'hotStories' },
-        { id: '10', title: 'Tokyo Revengers', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Du hành thời gian để thay đổi tương lai...', chapters: 270, section: 'newUpdates' },
-        { id: '11', title: 'One Punch Man', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Siêu anh hùng quá mạnh tìm kiếm đối thủ...', chapters: 180, section: 'hotStories' },
-        { id: '12', title: 'Death Note', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Cuộc chiến trí tuệ với quyển sổ thiên mệnh...', chapters: 108, section: 'newUpdates' }
+        { slug: 'solo-leveling', title: 'Solo Leveling', cover: 'https://i.imgur.com/7h4j2Yk.jpg', summary: 'Từ thợ săn yếu nhất đến mạnh nhất thế giới...', chapters: 200, section: 'hotStories' },
+        { slug: 'one-piece', title: 'One Piece', cover: 'https://i.imgur.com/Xq5uj3j.jpg', summary: 'Hành trình tìm kiếm kho báu vĩ đại nhất...', chapters: 1100, section: 'newUpdates' },
+        { slug: 'attack-on-titan', title: 'Attack on Titan', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chiến đấu vì tự do trước bọn khổng lồ...', chapters: 139, section: 'hotStories' },
+        { slug: 'jujutsu-kaisen', title: 'Jujutsu Kaisen', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Thế giới chú thuật đầy nguy hiểm...', chapters: 220, section: 'newUpdates' },
+        { slug: 'demon-slayer', title: 'Demon Slayer', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Hành trình diệt quỷ và cứu em gái...', chapters: 205, section: 'hotStories' },
+        { slug: 'my-hero-academia', title: 'My Hero Academia', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Trường học siêu anh hùng đầy thách thức...', chapters: 380, section: 'newUpdates' },
+        { slug: 'chainsaw-man', title: 'Chainsaw Man', cover: 'https://i.imgur.com/3h5y9kQ.jpg', summary: 'Quỷ cưa và hợp đồng đẫm máu...', chapters: 140, section: 'hotStories' },
+        { slug: 'spy-x-family', title: 'Spy x Family', cover: 'https://i.imgur.com/8j2k1lP.jpg', summary: 'Gia đình gián điệp hoàn hảo...', chapters: 80, section: 'newUpdates' },
+        { slug: 'black-clover', title: 'Black Clover', cover: 'https://i.imgur.com/2k3v9nL.jpg', summary: 'Chàng trai không phép thuật trở thành vua...', chapters: 360, section: 'hotStories' },
+        { slug: 'tokyo-revengers', title: 'Tokyo Revengers', cover: 'https://i.imgur.com/4w6xq3B.jpg', summary: 'Du hành thời gian để thay đổi tương lai...', chapters: 270, section: 'newUpdates' },
+        { slug: 'one-punch-man', title: 'One Punch Man', cover: 'https://i.imgur.com/6h7v8yM.jpg', summary: 'Siêu anh hùng quá mạnh tìm kiếm đối thủ...', chapters: 180, section: 'hotStories' },
+        { slug: 'death-note', title: 'Death Note', cover: 'https://i.imgur.com/9z6LqEJ.jpg', summary: 'Cuộc chiến trí tuệ với quyển sổ thiên mệnh...', chapters: 108, section: 'newUpdates' }
       ];
     }
 
-    // ==================== RENDERING ====================
     function renderStories() {
       const sections = ['newUpdates', 'hotStories'];
-      
       sections.forEach(section => {
         const container = document.getElementById(section);
-        const sectionStories = allStories.filter(s => s.section === section);
-        
-        // Xóa skeleton và render dữ liệu thật
         container.innerHTML = '';
+        const sectionStories = allStories.filter(s => s.section === section);
         sectionStories.forEach(story => container.appendChild(createCard(story)));
       });
     }
 
-    // ==================== UI COMPONENTS ====================
     function initSwiper() {
       new Swiper('#heroSlider', {
         loop: true,
@@ -919,9 +864,7 @@
           init: function() {
             this.slides.forEach(slide => {
               const img = slide.querySelector('.story-cover');
-              if (img) {
-                img.style.transition = 'transform 7s ease';
-              }
+              if (img) img.style.transition = 'transform 7s ease';
             });
           },
           slideChange: function() {
@@ -950,23 +893,23 @@
           <p style="font-size:0.94rem;color:var(--text-secondary);margin:8px 0;">${story.summary}</p>
           <div class="story-meta">
             <span>Chương ${story.chapters}</span>
-            <span class="bookmark ${isBookmarked(story.id) ? 'active' : ''}" onclick="toggleBookmark(event, '${story.id}')"><i class="fas fa-heart"></i></span>
+            <span class="bookmark ${isBookmarked(story.slug) ? 'active' : ''}" onclick="toggleBookmark(event, '${story.slug}')"><i class="fas fa-heart"></i></span>
           </div>
         </div>
       `;
+      // SỬA LINK CHUYỂN HƯỚNG - DÙNG SLUG
       card.onclick = (e) => {
         if (!e.target.closest('.bookmark')) {
-          window.location.href = `story-detail.html?id=${story.id}`;
+          window.location.href = `story-detail.html?slug=${story.slug}`;
         }
       };
       return card;
     }
 
-    // ==================== BOOKMARKS ====================
-    function toggleBookmark(e, id) {
+    function toggleBookmark(e, slug) {
       e.stopPropagation();
       const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      const index = bookmarks.indexOf(id);
+      const index = bookmarks.indexOf(slug);
       const bookmarkEl = e.currentTarget;
       
       if (index > -1) {
@@ -974,18 +917,17 @@
         bookmarkEl.classList.remove('active');
         showToast('Đã xóa khỏi yêu thích');
       } else {
-        bookmarks.push(id);
+        bookmarks.push(slug);
         bookmarkEl.classList.add('active');
         showToast('Đã thêm vào yêu thích!');
       }
       localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     }
 
-    function isBookmarked(id) {
-      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(id);
+    function isBookmarked(slug) {
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(slug);
     }
 
-    // ==================== SEARCH ====================
     let searchTimeout;
     function setupSearch() {
       const input = document.getElementById('searchInput');
@@ -998,18 +940,14 @@
       
       input.addEventListener('input', e => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          filterStories();
-        }, 300);
+        searchTimeout = setTimeout(() => filterStories(), 300);
       });
     }
 
     function filterStories() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const allGrids = document.querySelectorAll('.stories-grid');
-      allGrids.forEach(grid => {
-        grid.style.display = query ? 'none' : 'grid';
-      });
+      allGrids.forEach(grid => grid.style.display = query ? 'none' : 'grid');
       
       if (query) {
         const filtered = allStories.filter(s => s.title.toLowerCase().includes(query));
@@ -1022,7 +960,6 @@
       }
     }
 
-    // ==================== MENU & THEME ====================
     function setupMenu() {
       const hamburger = document.getElementById('hamburger');
       const sideMenu = document.getElementById('sideMenu');
@@ -1050,9 +987,7 @@
       document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
       const surface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
       const rgb = surface.match(/\d+/g);
-      if (rgb) {
-        document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
-      }
+      if (rgb) document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
       updateThemeIcon();
     }
 
@@ -1063,9 +998,7 @@
       localStorage.setItem('theme', newTheme);
       const surface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
       const rgb = surface.match(/\d+/g);
-      if (rgb) {
-        document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
-      }
+      if (rgb) document.documentElement.style.setProperty('--surface-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
       updateThemeIcon();
     }
 
@@ -1082,7 +1015,6 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // ==================== MENU ACTIONS ====================
     function login() { alert('Chức năng đăng nhập'); }
     function showBookmarks() { alert('Danh sách yêu thích'); }
     function showHistory() { alert('Lịch sử đọc'); }

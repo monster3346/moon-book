@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Truyện - Moon Book</title>
+  
+  <!-- Google Fonts & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg: #f9fbfd;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #718096;
+      --primary: #4c6ef5;
+      --primary-light: #748ffc;
+      --accent: #38b2ac;
+      --border: #e2e8f0;
+      --shadow: 0 8px 24px rgba(76, 110, 245, 0.1);
+      --radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --danger: #ef4444;
+      --danger-light: #dc2626;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0a1221;
+      --surface: #1a2332;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --primary: #748ffc;
+      --primary-light: #91a7ff;
+      --accent: #5eead4;
+      --border: #2d3748;
+      --shadow: 0 8px 24px rgba(116, 143, 252, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.8;
+      transition: var(--transition);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin: 0 0 30px;
+      font-size: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* Controls */
+    .controls {
+      background: var(--surface);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(76, 110, 245, 0.1);
+    }
+
+    .btn {
+      padding: 14px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-light);
+    }
+
+    /* Stories Table */
+    .stories-table {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg);
+      font-weight: 600;
+      color: var(--primary);
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: rgba(76, 110, 245, 0.05);
+    }
+
+    .story-cover {
+      width: 50px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .story-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .story-slug {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-family: monospace;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 0.875rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--surface);
+      padding: 30px;
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .modal-header h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-btn:hover {
+      color: var(--primary);
+      background: var(--bg);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(76, 110, 245, 0.1);
+    }
+
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Chapters List */
+    .chapters-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-top: 10px;
+      background: var(--bg);
+    }
+
+    .chapter-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .chapter-item:hover {
+      background: rgba(76, 110, 245, 0.05);
+    }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-info {
+      flex: 1;
+    }
+
+    .chapter-number {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .chapter-title {
+      color: var(--text-primary);
+      margin-left: 8px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--primary);
+      color: white;
+      padding: 18px 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition);
+      z-index: 2000;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: var(--danger);
+    }
+
+    .toast.success {
+      background: var(--primary);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .loading i {
+      margin-right: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 12px 6px;
+      }
+
+      .story-cover {
+        width: 40px;
+        height: 60px;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .btn-small {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .modal-content {
+        padding: 20px;
+      }
+    }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 100;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .theme-toggle i {
+      font-size: 1.3rem;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleTheme()" title="Chuyển Dark/Light mode">
+    <i class="fas fa-sun" id="themeIcon"></i>
+  </button>
+
+  <div class="container">
+    <h1><i class="fas fa-book-open-reader"></i> Quản Lý Truyện - Moon Book</h1>
+
+    <!-- Controls -->
+    <div class="controls">
+      <input type="text" class="search-box" id="searchInput" placeholder="🔍 Tìm truyện theo tên hoặc slug...">
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fas fa-plus-circle"></i> Thêm Truyện Mới
+      </button>
+      <button class="btn btn-primary" onclick="loadStories()">
+        <i class="fas fa-rotate-right"></i> Tải Lại
+      </button>
+    </div>
+
+    <!-- Stories Table -->
+    <div class="stories-table" id="storiesTable">
+      <div class="loading" id="loadingState">
+        <i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...
+      </div>
+      <table id="storiesList">
+        <thead>
+          <tr>
+            <th style="width: 80px;">Ảnh Bìa</th>
+            <th>Thông Tin Truyện</th>
+            <th style="width: 100px;">Chương</th>
+            <th style="width: 100px;">Lượt Xem</th>
+            <th style="width: 200px;">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody id="storiesBody">
+          <!-- Dữ liệu sẽ được render ở đây -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- Modal Thêm/Sửa Truyện -->
+  <div class="modal" id="storyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Thêm Truyện Mới</h2>
+        <button class="close-btn" onclick="closeModal()" title="Đóng">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="storyForm" onsubmit="saveStory(event)">
+        <div class="form-group">
+          <label>Tên Truyện *</label>
+          <input type="text" class="form-input" id="title" required placeholder="Nhập tên truyện...">
+        </div>
+        <div class="form-group">
+          <label>Tác Giả</label>
+          <input type="text" class="form-input" id="author" placeholder="Nhập tên tác giả...">
+        </div>
+        <div class="form-group">
+          <label>URL Ảnh Bìa *</label>
+          <input type="url" class="form-input" id="cover" required placeholder="https://example.com/cover.jpg">
+        </div>
+        <div class="form-group">
+          <label>Mô Tả</label>
+          <textarea class="form-input" id="description" rows="4" placeholder="Mô tả truyện..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Thể Loại (phân cách bằng dấu phẩy)</label>
+          <input type="text" class="form-input" id="genres" placeholder="Hành động, Phiêu lưu, Huyền huyễn">
+        </div>
+        
+        <!-- Quản lý chương (chỉ hiện khi sửa) -->
+        <div class="form-group" id="chaptersSection" style="display:none;">
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Danh Sách Chương</span>
+            <button type="button" class="btn btn-primary btn-small" onclick="openChapterModal()">
+              <i class="fas fa-plus"></i> Thêm Chương
+            </button>
+          </label>
+          <div class="chapters-list" id="chaptersList"></div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+          <button type="button" class="btn" onclick="closeModal()">
+            <i class="fas fa-xmark"></i> Hủy
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Lưu Truyện
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Thêm Chương -->
+  <div class="modal" id="chapterModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Thêm Chương Mới</h2>
+        <button class="close-btn" onclick="closeChapterModal()" title="Đóng">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="chapterForm" onsubmit="saveChapter(event)">
+        <div class="form-group">
+          <label>Số Chương *</label>
+          <input type="number" class="form-input" id="chapterNumber" required min="1" placeholder="1">
+        </div>
+        <div class="form-group">
+          <label>Tiêu Đề Chương</label>
+          <input type="text" class="form-input" id="chapterTitle" placeholder="Nhập tiêu đề...">
+        </div>
+        <div class="form-group">
+          <label>Nội Dung Chữ (hoặc để trống nếu là truyện tranh)</label>
+          <textarea class="form-input" id="chapterContent" rows="6" placeholder="Nội dung chương..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>URL Ảnh (mỗi dòng một URL, cho truyện tranh)</label>
+          <textarea class="form-input" id="chapterImages" rows="4" placeholder="https://example.com/page1.jpg"></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn" onclick="closeChapterModal()">
+            <i class="fas fa-xmark"></i> Hủy
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Thêm Chương
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://truyen-cute-api.onrender.com';
+    let currentSlug = null;
+    let allStories = [];
+
+    // ==================== THEME ====================
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.getElementById('themeIcon');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ==================== API CALLS ====================
+    async function fetchAPI(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+          method: options.method || 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        }
+        
+        return data;
+      } catch (error) {
+        console.error('API Error:', error);
+        showToast(`❌ Lỗi: ${error.message}`, 'error');
+        return { status: 'error', message: error.message };
+      }
+    }
+
+    // ==================== LOAD & RENDER ====================
+    async function loadStories() {
+      const tbody = document.getElementById('storiesBody');
+      const loading = document.getElementById('loadingState');
+      
+      loading.style.display = 'block';
+      loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...';
+      tbody.innerHTML = '';
+
+      const result = await fetchAPI('/api/stories');
+      
+      if (result.status === 'error') {
+        loading.innerHTML = '<i class="fas fa-exclamation-circle"></i> Lỗi tải dữ liệu. Vui lòng thử lại!';
+        return;
+      }
+
+      allStories = result.stories || result || [];
+      loading.style.display = 'none';
+      
+      if (allStories.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state">
+              <i class="fas fa-book-open"></i>
+              <p>📚 Chưa có truyện nào trong hệ thống</p>
+              <p style="font-size: 0.9rem; margin-top: 10px;">Nhấn "Thêm Truyện Mới" để bắt đầu</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      renderStories(allStories);
+    }
+
+    function renderStories(stories) {
+      const tbody = document.getElementById('storiesBody');
+      tbody.innerHTML = stories.map(story => `
+        <tr>
+          <td>
+            <img src="${story.cover || 'https://via.placeholder.com/50x70/4c6ef5/ffffff?text=No+Cover'}" 
+                 alt="${story.title}" 
+                 class="story-cover"
+                 onerror="this.src='https://via.placeholder.com/50x70/4c6ef5/ffffff?text=No+Cover'">
+          </td>
+          <td>
+            <div class="story-title">${story.title}</div>
+            <div class="story-slug">${story.slug}</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">
+              ${story.author || 'Ẩn danh'} • ${(story.genres || []).join(', ')}
+            </div>
+          </td>
+          <td><strong>${(story.chapters || []).length}</strong> chương</td>
+          <td>${story.views || 0}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-primary btn-small" onclick="editStory('${story.slug}')" title="Sửa truyện">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-primary btn-small" onclick="openChapterModal('${story.slug}')" title="Thêm chương">
+                <i class="fas fa-plus-circle"></i>
+              </button>
+              <a href="reader.html?slug=${story.slug}&chap=1" 
+                 target="_blank" 
+                 class="btn btn-primary btn-small" 
+                 title="Đọc thử">
+                <i class="fas fa-book-open"></i>
+              </a>
+              <button class="btn btn-danger btn-small" onclick="deleteStory('${story.slug}', '${story.title.replace(/'/g, "\\'")}')" title="Xóa truyện">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== CRUD OPERATIONS ====================
+    function openAddModal() {
+      currentSlug = null;
+      document.getElementById('modalTitle').textContent = '➕ Thêm Truyện Mới';
+      document.getElementById('storyForm').reset();
+      document.getElementById('chaptersSection').style.display = 'none';
+      document.getElementById('storyModal').classList.add('active');
+    }
+
+    async function editStory(slug) {
+      currentSlug = slug;
+      const story = allStories.find(s => s.slug === slug);
+      if (!story) return;
+
+      document.getElementById('modalTitle').textContent = `✏️ Sửa Truyện: ${story.title}`;
+      document.getElementById('title').value = story.title;
+      document.getElementById('author').value = story.author || '';
+      document.getElementById('cover').value = story.cover || '';
+      document.getElementById('description').value = story.description || '';
+      document.getElementById('genres').value = (story.genres || []).join(', ');
+
+      // Load và hiển thị danh sách chương
+      document.getElementById('chaptersSection').style.display = 'block';
+      await loadChaptersList();
+
+      document.getElementById('storyModal').classList.add('active');
+    }
+
+    async function loadChaptersList() {
+      const storyDetail = await fetchAPI(`/api/stories/${currentSlug}`);
+      const chapters = storyDetail.chapters || [];
+      renderChaptersList(chapters);
+    }
+
+    function renderChaptersList(chapters) {
+      const list = document.getElementById('chaptersList');
+      if (chapters.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">📄 Chưa có chương nào</p>';
+        return;
+      }
+
+      list.innerHTML = chapters.map(ch => `
+        <div class="chapter-item">
+          <div class="chapter-info">
+            <span class="chapter-number">Chương ${ch.number}:</span>
+            <span class="chapter-title">${ch.title || 'Không có tiêu đề'}</span>
+          </div>
+          <button class="btn btn-danger btn-small" onclick="deleteChapter(${ch.number})" title="Xóa chương">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function saveStory(e) {
+      e.preventDefault();
+      const storyData = {
+        title: document.getElementById('title').value.trim(),
+        author: document.getElementById('author').value.trim(),
+        cover: document.getElementById('cover').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        genres: document.getElementById('genres').value.trim()
+      };
+
+      if (!storyData.title || !storyData.cover) {
+        showToast('❌ Vui lòng nhập tên truyện và URL ảnh bìa!', 'error');
+        return;
+      }
+
+      const endpoint = currentSlug ? `/api/stories/${currentSlug}` : '/api/stories';
+      const method = currentSlug ? 'PUT' : 'POST';
+
+      const result = await fetchAPI(endpoint, { method, body: storyData });
+
+      if (result.status !== 'error') {
+        showToast(currentSlug ? '✅ Cập nhật truyện thành công!' : '✅ Thêm truyện mới thành công!');
+        closeModal();
+        loadStories();
+      }
+    }
+
+    async function deleteStory(slug, title) {
+      if (!confirm(`⚠️ Bạn có chắc muốn xóa truyện "${title}"?\n\n⚠️ LƯU Ý: Tất cả chương sẽ bị xóa theo và không thể khôi phục!`)) return;
+
+      const result = await fetchAPI(`/api/story/${slug}`, { method: 'DELETE' });
+
+      if (result.status !== 'error') {
+        showToast('🗑️ Đã xóa truyện thành công!');
+        loadStories();
+      }
+    }
+
+    // ==================== CHAPTER MANAGEMENT ====================
+    function openChapterModal(slug) {
+      currentSlug = slug;
+      document.getElementById('chapterForm').reset();
+      document.getElementById('chapterModal').classList.add('active');
+    }
+
+    async function saveChapter(e) {
+      e.preventDefault();
+      const chapterData = {
+        number: parseInt(document.getElementById('chapterNumber').value),
+        title: document.getElementById('chapterTitle').value.trim(),
+        content: document.getElementById('chapterContent').value.trim(),
+        images: document.getElementById('chapterImages').value.trim()
+      };
+
+      if (!chapterData.number || chapterData.number < 1) {
+        showToast('❌ Số chương phải là số dương!', 'error');
+        return;
+      }
+
+      const result = await fetchAPI(`/api/stories/${currentSlug}/chapter`, {
+        method: 'POST',
+        body: chapterData
+      });
+
+      if (result.status !== 'error') {
+        showToast('✅ Thêm chương thành công!');
+        closeChapterModal();
+        
+        // Reload chapters list if editing story
+        if (document.getElementById('storyModal').classList.contains('active')) {
+          await loadChaptersList();
+        }
+      }
+    }
+
+    async function deleteChapter(chapterNumber) {
+      if (!confirm(`⚠️ Xóa chương ${chapterNumber} của truyện ${currentSlug}?`)) return;
+
+      const result = await fetchAPI(`/api/story/${currentSlug}/chapter/${chapterNumber}`, {
+        method: 'DELETE'
+      });
+
+      if (result.status !== 'error') {
+        showToast('🗑️ Đã xóa chương!');
+        await loadChaptersList();
+      }
+    }
+
+    // ==================== MODAL & UI ====================
+    function closeModal() {
+      document.getElementById('storyModal').classList.remove('active');
+      currentSlug = null;
+    }
+
+    function closeChapterModal() {
+      document.getElementById('chapterModal').classList.remove('active');
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      
+      // Trigger reflow for animation
+      void toast.offsetWidth;
+      toast.classList.add('show');
+      
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filtered = allStories.filter(story => 
+        story.title.toLowerCase().includes(searchTerm) || 
+        story.slug.toLowerCase().includes(searchTerm)
+      );
+      renderStories(filtered);
+    });
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    // Escape key to close modals
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(modal => {
+          modal.classList.remove('active');
+        });
+      }
+    });
+    // Initialize
+    initTheme();
+    loadStories();
+  </script>
+</body>
+</html>
