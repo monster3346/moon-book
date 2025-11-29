@@ -70,7 +70,6 @@
       gap: 12px;
     }
 
-    /* Controls */
     .controls {
       background: var(--surface);
       padding: 20px;
@@ -135,7 +134,6 @@
       background: var(--danger-light);
     }
 
-    /* Stories Table */
     .stories-table {
       background: var(--surface);
       border-radius: var(--radius);
@@ -195,7 +193,6 @@
       font-size: 0.875rem;
     }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -302,7 +299,6 @@
       resize: vertical;
     }
 
-    /* Chapters List */
     .chapters-list {
       max-height: 300px;
       overflow-y: auto;
@@ -344,7 +340,6 @@
       margin-left: 8px;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -373,11 +368,6 @@
       background: var(--danger);
     }
 
-    .toast.success {
-      background: var(--primary);
-    }
-
-    /* Loading */
     .loading {
       text-align: center;
       padding: 40px;
@@ -401,7 +391,6 @@
       color: var(--primary);
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -453,7 +442,6 @@
       }
     }
 
-    /* Dark mode toggle */
     .theme-toggle {
       position: fixed;
       top: 20px;
@@ -620,7 +608,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://truyen-cute-api.onrender.com';
+    const API_BASE = 'https://truyen-cute-api.onrender.com';
     let currentSlug = null;
     let allStories = [];
 
@@ -650,7 +638,7 @@
     // ==================== API CALLS ====================
     async function fetchAPI(endpoint, options = {}) {
       try {
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
           method: options.method || 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -770,7 +758,6 @@
       document.getElementById('description').value = story.description || '';
       document.getElementById('genres').value = (story.genres || []).join(', ');
 
-      // Load và hiển thị danh sách chương
       document.getElementById('chaptersSection').style.display = 'block';
       await loadChaptersList();
 
@@ -940,6 +927,7 @@
         });
       }
     });
+
     // Initialize
     initTheme();
     loadStories();

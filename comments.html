@@ -12,7 +12,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4c6ef5">
@@ -65,7 +65,6 @@
       padding: 0 20px;
     }
 
-    /* Header */
     header {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -124,7 +123,6 @@
       background: rgba(76, 110, 245, 0.15);
     }
 
-    /* Comment Form */
     .comment-form {
       background: var(--surface);
       padding: 24px;
@@ -212,7 +210,6 @@
       color: var(--primary);
     }
 
-    /* Comments List */
     .comments-section {
       margin: 40px 0;
     }
@@ -332,7 +329,6 @@
       margin-top: 16px;
     }
 
-    /* Empty State */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -345,7 +341,6 @@
       color: var(--border);
     }
 
-    /* Loading State */
     .loading {
       display: flex;
       justify-content: center;
@@ -353,7 +348,6 @@
       color: var(--text-secondary);
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .chapter-info { display: none; }
       .form-header { flex-direction: column; align-items: flex-start; }
@@ -407,12 +401,11 @@
 
   <script>
     // ==================== API CONFIGURATION ====================
-    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
+    const API_BASE = 'https://truyen-cute-api.onrender.com';
     
-    // Hàm gọi API chung
     async function fetchAPIData(endpoint, options = {}) {
       try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
           method: options.method || 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -420,10 +413,7 @@
           body: options.body ? JSON.stringify(options.body) : undefined
         });
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         return { status: 'success', data };
         
@@ -434,15 +424,12 @@
     }
 
     // ==================== COMMENT API FUNCTIONS ====================
-    // Lấy bình luận từ API
     async function getCommentsFromAPI(storyId, chapterNum) {
-      const result = await fetchAPIData(`/api/comments/${storyId}/${chapterNum}`);
-      return result;
+      return await fetchAPIData(`/api/comments/${storyId}/${chapterNum}`);
     }
 
-    // Gửi bình luận mới
     async function postCommentToAPI(storyId, chapterNum, comment) {
-      const result = await fetchAPIData('/api/comments', {
+      return await fetchAPIData('/api/comments', {
         method: 'POST',
         body: {
           storyId,
@@ -452,20 +439,14 @@
           timestamp: comment.timestamp
         }
       });
-      return result;
     }
 
-    // Like bình luận
     async function likeCommentOnAPI(commentId) {
-      const result = await fetchAPIData(`/api/comments/${commentId}/like`, {
-        method: 'PUT'
-      });
-      return result;
+      return await fetchAPIData(`/api/comments/${commentId}/like`, { method: 'PUT' });
     }
 
-    // Trả lời bình luận
     async function replyCommentOnAPI(parentId, reply) {
-      const result = await fetchAPIData(`/api/comments/${parentId}/reply`, {
+      return await fetchAPIData(`/api/comments/${parentId}/reply`, {
         method: 'POST',
         body: {
           author: reply.author,
@@ -473,59 +454,47 @@
           timestamp: reply.timestamp
         }
       });
-      return result;
     }
 
-    // Báo cáo bình luận
     async function reportCommentOnAPI(commentId, reason) {
-      const result = await fetchAPIData(`/api/comments/${commentId}/report`, {
+      return await fetchAPIData(`/api/comments/${commentId}/report`, {
         method: 'POST',
         body: { reason }
       });
-      return result;
     }
     // ====================================================================================
 
-    // ==================== GLOBAL VARIABLES ====================
     const urlParams = new URLSearchParams(window.location.search);
-    const storyId = urlParams.get('story') || '1';
+    const storyId = urlParams.get('story') || 'demo-truyen';
     const chapterNum = urlParams.get('chap') || '1';
     const commentKey = `comments_${storyId}_${chapterNum}`;
     
     let comments = [];
     let isLoading = false;
 
-    // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
       updateThemeIcon();
-      loadCommentsFromAPI(); // Gọi API thay vì load từ localStorage
+      loadCommentsFromAPI();
     });
 
-    // ==================== API DATA LOADING ====================
     async function loadCommentsFromAPI() {
       if (isLoading) return;
-      
       isLoading = true;
       const commentsList = document.getElementById('commentsList');
       commentsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải bình luận...</div>';
 
       try {
-        // Gọi API lấy bình luận
         const result = await getCommentsFromAPI(storyId, chapterNum);
-        
-        if (result.status === 'error') {
-          throw new Error(result.message || 'Không thể tải bình luận');
-        }
+        if (result.status === 'error') throw new Error(result.message || 'Không thể tải bình luận');
 
-        // Chuyển đổi dữ liệu API sang format nội bộ
         comments = (result.data || []).map(comment => ({
           id: comment._id || comment.id,
           author: comment.author || 'Ẩn danh',
           content: comment.content || '',
           timestamp: comment.timestamp ? new Date(comment.timestamp).getTime() : Date.now(),
           likes: comment.likes || 0,
-          liked: false, // Trạng thái like được lưu locally
+          liked: false,
           replies: (comment.replies || []).map(reply => ({
             id: reply._id || reply.id,
             author: reply.author || 'Ẩn danh',
@@ -536,24 +505,19 @@
           }))
         }));
 
-        // Render giao diện
+        localStorage.setItem(commentKey, JSON.stringify(comments));
         renderComments();
         
       } catch (error) {
         console.error('Lỗi tải bình luận:', error);
-        
-        // Fallback: thử load từ localStorage nếu API lỗi
         comments = JSON.parse(localStorage.getItem(commentKey) || '[]');
         renderComments();
-        
-        // Hiển thị thông báo lỗi nhẹ
         showToast('Không thể kết nối API, đang hiển thị dữ liệu tạm thời');
       } finally {
         isLoading = false;
       }
     }
 
-    // ==================== RENDERING ====================
     function renderComments() {
       const commentsList = document.getElementById('commentsList');
       const commentCount = document.getElementById('commentCount');
@@ -611,8 +575,6 @@
       `;
     }
 
-    // ==================== ACTIONS ====================
-    // Gửi bình luận mới
     async function postComment() {
       const input = document.getElementById('commentInput');
       const content = input.value.trim();
@@ -627,21 +589,16 @@
         replies: []
       };
 
-      // Gọi API trước
       const result = await postCommentToAPI(storyId, chapterNum, newComment);
       
       if (result.status === 'success') {
-        // Thêm vào đầu danh sách
         comments.unshift({
           ...newComment,
           id: result.data.id || result.data._id,
           timestamp: new Date(result.data.timestamp || newComment.timestamp).getTime()
         });
         
-        // Lưu vào localStorage làm backup
         localStorage.setItem(commentKey, JSON.stringify(comments));
-        
-        // Render lại
         renderComments();
         input.value = '';
         showToast('Đã gửi bình luận!');
@@ -654,7 +611,6 @@
       document.getElementById('commentInput').value = '';
     }
 
-    // Trả lời bình luận
     async function postReply(parentIndex, depth) {
       const parentComment = depth === 0 ? comments[parentIndex] : comments[parentIndex].replies[parentIndex];
       const parentId = parentComment.id;
@@ -671,11 +627,9 @@
         liked: false
       };
 
-      // Gọi API
       const result = await replyCommentOnAPI(parentId, newReply);
       
       if (result.status === 'success') {
-        // Thêm reply vào comment
         if (depth === 0) {
           if (!comments[parentIndex].replies) comments[parentIndex].replies = [];
           comments[parentIndex].replies.unshift({
@@ -685,10 +639,7 @@
           });
         }
         
-        // Lưu vào localStorage
         localStorage.setItem(commentKey, JSON.stringify(comments));
-        
-        // Render lại
         renderComments();
         input.value = '';
         showToast('Đã trả lời bình luận!');
@@ -707,38 +658,29 @@
       document.getElementById(`replyForm_${parentIndex}_${depth}`).classList.remove('active');
     }
 
-    // Like bình luận
     async function likeComment(index, depth) {
       let comment;
       
       if (depth === 0) {
         comment = comments[index];
       } else {
-        // Tìm comment cha và reply
-        const parentIndex = Math.floor(index / 1000); // Giả sử depth 1
+        const parentIndex = Math.floor(index / 1000);
         const replyIndex = index % 1000;
         comment = comments[parentIndex].replies[replyIndex];
       }
       
-      // Gọi API
       const result = await likeCommentOnAPI(comment.id);
       
       if (result.status === 'success') {
-        // Cập nhật số like từ API
         comment.likes = result.data.likes || (comment.likes + 1);
         comment.liked = !comment.liked;
-        
-        // Lưu vào localStorage
         localStorage.setItem(commentKey, JSON.stringify(comments));
-        
-        // Render lại
         renderComments();
       } else {
         showToast('Lỗi like bình luận, thử lại sau');
       }
     }
 
-    // Báo cáo bình luận
     async function reportComment(index, depth) {
       const reason = prompt('Lý do báo cáo:');
       if (!reason) return;
@@ -761,7 +703,6 @@
       }
     }
 
-    // ==================== UTILITIES ====================
     function getInitials(name) {
       return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     }
@@ -785,7 +726,28 @@
       return `${days} ngày trước`;
     }
 
-    // Toast
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      updateThemeIcon();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.querySelector('#themeToggle i');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
     function showToast(message) {
       const toast = document.createElement('div');
       toast.style.cssText = `
@@ -811,42 +773,18 @@
       }, 2500);
     }
 
-    // ==================== THEME ====================
-    function initTheme() {
-      const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = saved || (prefersDark ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
-      updateThemeIcon();
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme') || 'light';
-      const newTheme = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateThemeIcon();
-    }
-
-    function updateThemeIcon() {
-      const icon = document.querySelector('#themeToggle i');
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', initTheme);
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes fadeOutDown {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
-  
-  <style>
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes fadeOutDown {
-      from { opacity: 1; transform: translateX(-50%) translateY(0); }
-      to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    }
-  </style>
 </body>
 </html>

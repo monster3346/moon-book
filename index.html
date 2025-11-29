@@ -716,13 +716,13 @@
       <div class="swiper" id="heroSlider">
         <div class="swiper-wrapper">
           <div class="swiper-slide">
-            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1360&h=440&fit=crop" alt="Truyện hot" class="story-cover">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1360&h=440&fit=crop" alt="Truyện hot" class="story-cover" loading="lazy">
           </div>
           <div class="swiper-slide">
-            <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=1360&h=440&fit=crop" alt="Chap mới" class="story-cover">
+            <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=1360&h=440&fit=crop" alt="Chap mới" class="story-cover" loading="lazy">
           </div>
           <div class="swiper-slide">
-            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1360&h=440&fit=crop" alt="Xu hướng" class="story-cover">
+            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1360&h=440&fit=crop" alt="Xu hướng" class="story-cover" loading="lazy">
           </div>
         </div>
         <div class="swiper-pagination"></div>
@@ -749,22 +749,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <script>
-    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
-    
-    async function fetchAPIData(endpoint) {
-      try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
-      } catch (error) {
-        console.error('API Error:', error);
-        return { status: 'error', message: error.message };
-      }
-    }
-
-    async function fetchAllStories() {
-      return await fetchAPIData('/api/stories');
-    }
+    const API_BASE = 'https://truyen-cute-api.onrender.com';
 
     let allStories = [];
     let isLoading = false;
@@ -778,51 +763,106 @@
       updateThemeIcon();
     });
 
+    async function fetchStories() {
+      try {
+        const res = await fetch(`${API_BASE}/api/stories`);
+        if (!res.ok) throw new Error(res.status);
+        const json = await res.json();
+        return Array.isArray(json) ? json : json.data;
+      } catch (e) {
+        console.error('Lỗi API:', e);
+        return [];
+      }
+    }
+
     async function loadStoriesFromAPI() {
       if (isLoading) return;
-      
       isLoading = true;
-      const containers = ['newUpdates', 'hotStories'];
-      
-      containers.forEach(section => {
-        const container = document.getElementById(section);
-        container.innerHTML = Array(6).fill('').map(() => `
+
+      showSkeleton();
+
+      const apiData = await fetchStories();
+
+      allStories = (apiData.length ? apiData : getSampleStories()).map((story, index) => ({
+        slug: story.slug || story._id || `story-${index}`,
+        title: story.title || 'Không có tên',
+        cover: story.cover || 'https://i.imgur.com/7h4j2Yk.jpg',
+        summary: story.description || (story.genres && story.genres.join(', ')) || 'Không có mô tả',
+        chapters: story.chapters ? story.chapters.length : 0,
+        section: index % 2 === 0 ? 'hotStories' : 'newUpdates'
+      }));
+
+      renderStories();
+      showToast(apiData.length ? 'Đã tải dữ liệu thành công!' : 'Không có dữ liệu API, đang dùng dữ liệu mẫu');
+      isLoading = false;
+    }
+
+    function showSkeleton() {
+      ['newUpdates', 'hotStories'].forEach(id => {
+        const box = document.getElementById(id);
+        box.innerHTML = Array(6).fill(0).map(() => `
           <div class="story-card skeleton">
-            <div class="story-cover" style="background: linear-gradient(45deg, #dbeafe, #ccfbf1);"></div>
+            <div class="story-cover"></div>
             <div class="story-info">
-              <div class="story-title" style="background: #e2e8f0; height: 20px; border-radius: 4px;"></div>
-              <div style="background: #e2e8f0; height: 16px; border-radius: 4px; margin-top: 8px;"></div>
+              <div style="height:20px;background:#e2e8f0;border-radius:4px;margin-bottom:8px;"></div>
+              <div style="height:16px;background:#e2e8f0;border-radius:4px;"></div>
             </div>
           </div>
         `).join('');
       });
+    }
 
-      try {
-        const apiData = await fetchAllStories();
-        
-        if (apiData.status === 'error') throw new Error(apiData.message || 'Không thể tải dữ liệu');
+    function renderStories() {
+      ['newUpdates', 'hotStories'].forEach(section => {
+        const container = document.getElementById(section);
+        container.innerHTML = '';
+        const sectionStories = allStories.filter(s => s.section === section);
+        sectionStories.forEach(story => container.appendChild(createCard(story)));
+      });
+    }
 
-        // CHUYỂN ĐỔI DỮ LIỆU API - DÙNG SLUG THAY VÌ ID
-        allStories = (apiData || []).map((story, index) => ({
-          slug: story.slug || story._id || `story-${index}`, // DÙNG SLUG LÀM KHÓA CHÍNH
-          title: story.title || 'Không có tên',
-          cover: story.cover || 'https://i.imgur.com/7h4j2Yk.jpg',
-          summary: story.description || (story.genres && story.genres.join(', ')) || 'Không có mô tả',
-          chapters: story.chapters ? story.chapters.length : 0,
-          section: index % 2 === 0 ? 'hotStories' : 'newUpdates'
-        }));
+    function createCard(story) {
+      const card = document.createElement('div');
+      card.className = 'story-card';
+      card.innerHTML = `
+        <img src="${story.cover}" alt="${story.title}" class="story-cover" loading="lazy">
+        <div class="story-info">
+          <div class="story-title">${story.title}</div>
+          <p style="font-size:0.94rem;color:var(--text-secondary);margin:8px 0;">${story.summary}</p>
+          <div class="story-meta">
+            <span>Chương ${story.chapters}</span>
+            <span class="bookmark ${isBookmarked(story.slug) ? 'active' : ''}" onclick="toggleBookmark(event, '${story.slug}')"><i class="fas fa-heart"></i></span>
+          </div>
+        </div>
+      `;
+      card.onclick = (e) => {
+        if (!e.target.closest('.bookmark')) {
+          window.location.href = `story-detail.html?slug=${story.slug}`;
+        }
+      };
+      return card;
+    }
 
-        renderStories();
-        showToast('Đã tải dữ liệu thành công!');
-        
-      } catch (error) {
-        console.error('Lỗi tải truyện:', error);
-        showToast('Lỗi tải dữ liệu, đang dùng dữ liệu mẫu...');
-        allStories = getSampleStories();
-        renderStories();
-      } finally {
-        isLoading = false;
+    function toggleBookmark(e, slug) {
+      e.stopPropagation();
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      const index = bookmarks.indexOf(slug);
+      const bookmarkEl = e.currentTarget;
+
+      if (index > -1) {
+        bookmarks.splice(index, 1);
+        bookmarkEl.classList.remove('active');
+        showToast('Đã xóa khỏi yêu thích');
+      } else {
+        bookmarks.push(slug);
+        bookmarkEl.classList.add('active');
+        showToast('Đã thêm vào yêu thích!');
       }
+      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+
+    function isBookmarked(slug) {
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(slug);
     }
 
     function getSampleStories() {
@@ -842,16 +882,6 @@
       ];
     }
 
-    function renderStories() {
-      const sections = ['newUpdates', 'hotStories'];
-      sections.forEach(section => {
-        const container = document.getElementById(section);
-        container.innerHTML = '';
-        const sectionStories = allStories.filter(s => s.section === section);
-        sectionStories.forEach(story => container.appendChild(createCard(story)));
-      });
-    }
-
     function initSwiper() {
       new Swiper('#heroSlider', {
         loop: true,
@@ -861,13 +891,13 @@
         fadeEffect: { crossFade: true },
         speed: 1000,
         on: {
-          init: function() {
+          init: function () {
             this.slides.forEach(slide => {
               const img = slide.querySelector('.story-cover');
               if (img) img.style.transition = 'transform 7s ease';
             });
           },
-          slideChange: function() {
+          slideChange: function () {
             const prevSlide = this.slides[this.previousIndex];
             const currSlide = this.slides[this.activeIndex];
             if (prevSlide) {
@@ -881,83 +911,6 @@
           }
         }
       });
-    }
-
-    function createCard(story) {
-      const card = document.createElement('div');
-      card.className = 'story-card';
-      card.innerHTML = `
-        <img src="${story.cover}" alt="${story.title}" class="story-cover" loading="lazy">
-        <div class="story-info">
-          <div class="story-title">${story.title}</div>
-          <p style="font-size:0.94rem;color:var(--text-secondary);margin:8px 0;">${story.summary}</p>
-          <div class="story-meta">
-            <span>Chương ${story.chapters}</span>
-            <span class="bookmark ${isBookmarked(story.slug) ? 'active' : ''}" onclick="toggleBookmark(event, '${story.slug}')"><i class="fas fa-heart"></i></span>
-          </div>
-        </div>
-      `;
-      // SỬA LINK CHUYỂN HƯỚNG - DÙNG SLUG
-      card.onclick = (e) => {
-        if (!e.target.closest('.bookmark')) {
-          window.location.href = `story-detail.html?slug=${story.slug}`;
-        }
-      };
-      return card;
-    }
-
-    function toggleBookmark(e, slug) {
-      e.stopPropagation();
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      const index = bookmarks.indexOf(slug);
-      const bookmarkEl = e.currentTarget;
-      
-      if (index > -1) {
-        bookmarks.splice(index, 1);
-        bookmarkEl.classList.remove('active');
-        showToast('Đã xóa khỏi yêu thích');
-      } else {
-        bookmarks.push(slug);
-        bookmarkEl.classList.add('active');
-        showToast('Đã thêm vào yêu thích!');
-      }
-      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-    }
-
-    function isBookmarked(slug) {
-      return JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(slug);
-    }
-
-    let searchTimeout;
-    function setupSearch() {
-      const input = document.getElementById('searchInput');
-      input.addEventListener('keypress', e => {
-        if (e.key === 'Enter') {
-          const q = e.target.value.trim();
-          if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-        }
-      });
-      
-      input.addEventListener('input', e => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => filterStories(), 300);
-      });
-    }
-
-    function filterStories() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const allGrids = document.querySelectorAll('.stories-grid');
-      allGrids.forEach(grid => grid.style.display = query ? 'none' : 'grid');
-      
-      if (query) {
-        const filtered = allStories.filter(s => s.title.toLowerCase().includes(query));
-        const resultContainer = document.getElementById('hotStories');
-        resultContainer.style.display = 'grid';
-        resultContainer.innerHTML = '';
-        filtered.forEach(story => resultContainer.appendChild(createCard(story)));
-      } else {
-        renderStories();
-      }
     }
 
     function setupMenu() {
@@ -978,6 +931,37 @@
         overlay.classList.remove('active');
         document.body.style.overflow = '';
       });
+    }
+
+    function setupSearch() {
+      const input = document.getElementById('searchInput');
+      input.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+          const q = e.target.value.trim();
+          if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+        }
+      });
+
+      input.addEventListener('input', () => {
+        clearTimeout(window.searchTimeout);
+        window.searchTimeout = setTimeout(() => filterStories(), 300);
+      });
+    }
+
+    function filterStories() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const allGrids = document.querySelectorAll('.stories-grid');
+      allGrids.forEach(grid => grid.style.display = query ? 'none' : 'grid');
+
+      if (query) {
+        const filtered = allStories.filter(s => s.title.toLowerCase().includes(query));
+        const resultContainer = document.getElementById('hotStories');
+        resultContainer.style.display = 'grid';
+        resultContainer.innerHTML = '';
+        filtered.forEach(story => resultContainer.appendChild(createCard(story)));
+      } else {
+        renderStories();
+      }
     }
 
     function initTheme() {

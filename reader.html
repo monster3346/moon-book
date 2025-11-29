@@ -13,7 +13,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4c6ef5">
@@ -61,7 +61,7 @@
       color: var(--text-primary);
       line-height: var(--line-height);
       transition: var(--transition);
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .container {
@@ -70,7 +70,6 @@
       padding: 0 20px;
     }
 
-    /* Header */
     header {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -135,7 +134,6 @@
       color: var(--primary);
     }
 
-    /* Reader Content */
     .reader-content {
       padding: 40px 0;
       max-width: 800px;
@@ -149,7 +147,6 @@
       text-align: justify;
     }
 
-    /* Comic images */
     .comic-image {
       width: 100%;
       max-width: 100%;
@@ -202,7 +199,6 @@
       border-color: var(--primary);
     }
 
-    /* Settings Panel */
     .settings-panel {
       position: fixed;
       bottom: 0;
@@ -254,7 +250,6 @@
       border-color: var(--primary);
     }
 
-    /* Progress */
     .progress-bar {
       position: fixed;
       top: 0;
@@ -266,7 +261,6 @@
       transition: width 0.1s ease;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 32px;
@@ -290,7 +284,6 @@
       bottom: 80px;
     }
 
-    /* Loading */
     .loading {
       display: flex;
       justify-content: center;
@@ -304,7 +297,6 @@
       margin-right: 12px;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .reader-content {
         padding: 20px 0;
@@ -325,10 +317,8 @@
 </head>
 <body>
 
-  <!-- Progress Bar -->
   <div class="progress-bar" id="progressBar"></div>
 
-  <!-- Header -->
   <header>
     <div class="container header-inner">
       <a href="javascript:history.back()" class="back-btn">
@@ -349,7 +339,6 @@
     </div>
   </header>
 
-  <!-- Reader Content -->
   <main class="container">
     <article class="reader-content" id="chapterContent">
       <div class="loading">
@@ -357,7 +346,6 @@
       </div>
     </article>
 
-    <!-- Chapter Navigation -->
     <div class="chapter-nav">
       <button class="nav-btn" id="prevBtn" onclick="prevChapter()" disabled>
         <i class="fas fa-chevron-left"></i> Chương trước
@@ -368,7 +356,6 @@
     </div>
   </main>
 
-  <!-- Settings Panel -->
   <div class="settings-panel" id="settingsPanel">
     <div class="container settings-inner">
       <div class="setting-group">
@@ -386,61 +373,50 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script>
     // ==================== API CONFIGURATION ====================
-    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
-    
-    // Hàm gọi API chung
+    const API_BASE = 'https://truyen-cute-api.onrender.com';
+
     async function fetchAPIData(endpoint, options = {}) {
       try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
           method: options.method || 'GET',
           headers: {
             'Content-Type': 'application/json'
           },
           body: options.body ? JSON.stringify(options.body) : undefined
         });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         return { status: 'success', data };
-        
+
       } catch (error) {
         console.error('API Error:', error);
         return { status: 'error', message: error.message };
       }
     }
 
-    // Hàm lấy thông tin truyện (bao gồm danh sách chương)
     async function fetchStory(slug) {
-      const result = await fetchAPIData(`/api/stories/${slug}`);
-      return result;
+      return await fetchAPIData(`/api/stories/${slug}`);
     }
 
-    // Hàm lấy nội dung chương cụ thể
     async function fetchChapter(slug, chapNum) {
-      const result = await fetchAPIData(`/api/chapters/${slug}/${chapNum}`);
-      return result;
+      return await fetchAPIData(`/api/chapters/${slug}/${chapNum}`);
     }
     // ====================================================================================
 
-    // ==================== GLOBAL VARIABLES ====================
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || 'demo-truyen';
     const chapterNum = parseInt(urlParams.get('chap')) || 1;
-    
+
     let storyData = null;
     let currentChapter = null;
     let chaptersList = [];
     let isLoading = false;
 
-    // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       updateThemeIcon();
@@ -450,22 +426,15 @@
       restoreReadingPosition();
     });
 
-    // ==================== API DATA LOADING ====================
     async function loadStoryData() {
       if (isLoading) return;
-      
       isLoading = true;
       showLoadingState();
 
       try {
-        // Lấy thông tin truyện và danh sách chương
         const storyResult = await fetchStory(slug);
-        
-        if (storyResult.status === 'error') {
-          throw new Error(storyResult.message || 'Không thể tải thông tin truyện');
-        }
+        if (storyResult.status === 'error') throw new Error(storyResult.message || 'Không thể tải thông tin truyện');
 
-        // Chuyển đổi dữ liệu API sang format nội bộ
         storyData = {
           slug: slug,
           title: storyResult.data.title || 'Không tên',
@@ -477,18 +446,12 @@
           }))
         };
 
-        // Sắp xếp chương theo số tăng dần
         storyData.chapters.sort((a, b) => a.num - b.num);
-        
         chaptersList = storyData.chapters;
-        
-        // Lấy nội dung chương hiện tại
         await loadCurrentChapter();
-        
+
       } catch (error) {
         console.error('Lỗi tải dữ liệu truyện:', error);
-        
-        // Fallback: thử load từ localStorage nếu có
         const savedStory = localStorage.getItem(`story_${slug}`);
         if (savedStory) {
           storyData = JSON.parse(savedStory);
@@ -496,7 +459,6 @@
           await loadCurrentChapter();
           showToast('Đang hiển thị dữ liệu tạm thời');
         } else {
-          // Fallback cuối: dùng dữ liệu mẫu
           useSampleData();
         }
       } finally {
@@ -506,9 +468,7 @@
 
     async function loadCurrentChapter() {
       try {
-        // Thử lấy nội dung chương từ API endpoint riêng
         const chapterResult = await fetchChapter(slug, chapterNum);
-        
         if (chapterResult.status === 'success' && chapterResult.data) {
           currentChapter = {
             num: chapterResult.data.num || chapterNum,
@@ -517,12 +477,9 @@
             images: chapterResult.data.images || null
           };
         } else {
-          // Nếu không có endpoint riêng, tìm trong danh sách chương
           currentChapter = chaptersList.find(c => c.num === chapterNum) || chaptersList[0];
         }
-        
         renderChapter();
-        
       } catch (error) {
         console.log('Không thể tải nội dung chương riêng, dùng danh sách chương');
         currentChapter = chaptersList.find(c => c.num === chapterNum) || chaptersList[0];
@@ -531,7 +488,6 @@
     }
 
     function useSampleData() {
-      // Dữ liệu mẫu fallback
       storyData = {
         slug: slug,
         title: "Solo Leveling",
@@ -557,65 +513,49 @@
       document.getElementById('nextBtn').disabled = true;
     }
 
-    // ==================== RENDERING ====================
     function renderChapter() {
       if (!currentChapter) return;
 
       document.title = `Chương ${currentChapter.num}: ${currentChapter.title} - ${storyData.title}`;
       document.getElementById('chapterTitle').textContent = `Chương ${currentChapter.num}: ${currentChapter.title}`;
-      
-      // Ưu tiên hiển thị nội dung chữ
+
       if (currentChapter.content) {
-        // Thay \n thành <br> cho đẹp
         const formattedContent = currentChapter.content.replace(/\n/g, '<br>');
         document.getElementById('chapterContent').innerHTML = `<p>${formattedContent}</p>`;
-      } 
-      // Nếu không có chữ nhưng có ảnh (truyện tranh)
-      else if (currentChapter.images && currentChapter.images.length > 0) {
+      } else if (currentChapter.images && currentChapter.images.length > 0) {
         const imagesHtml = currentChapter.images.map(img => 
           `<img src="${img}" class="comic-image" loading="lazy" alt="Trang truyện">`
         ).join('');
         document.getElementById('chapterContent').innerHTML = imagesHtml;
-      } 
-      // Nếu không có gì
-      else {
+      } else {
         document.getElementById('chapterContent').innerHTML = '<p>Nội dung trống</p>';
       }
-      
+
       document.getElementById('pageTitle').textContent = document.title;
 
-      // Cập nhật trạng thái nút điều hướng
       const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
       document.getElementById('prevBtn').disabled = currentIndex <= 0;
       document.getElementById('nextBtn').disabled = currentIndex >= chaptersList.length - 1;
 
-      // Lưu vào localStorage làm backup
       localStorage.setItem(`story_${slug}`, JSON.stringify(storyData));
       localStorage.setItem(`currentChapter_${slug}_${chapterNum}`, JSON.stringify(currentChapter));
     }
 
-    // ==================== NAVIGATION ====================
     function prevChapter() {
       const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
-      if (currentIndex > 0) {
-        goToChapter(chaptersList[currentIndex - 1].num);
-      }
+      if (currentIndex > 0) goToChapter(chaptersList[currentIndex - 1].num);
     }
 
     function nextChapter() {
       const currentIndex = chaptersList.findIndex(c => c.num === currentChapter.num);
-      if (currentIndex < chaptersList.length - 1) {
-        goToChapter(chaptersList[currentIndex + 1].num);
-      }
+      if (currentIndex < chaptersList.length - 1) goToChapter(chaptersList[currentIndex + 1].num);
     }
 
     function goToChapter(num) {
       window.location.href = `?slug=${slug}&chap=${num}`;
     }
 
-    // ==================== EVENT LISTENERS ====================
     function setupEventListeners() {
-      // Cài đặt font size
       document.querySelectorAll('[data-size]').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
@@ -625,7 +565,6 @@
         });
       });
 
-      // Cài đặt line height
       document.querySelectorAll('[data-line]').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('[data-line]').forEach(b => b.classList.remove('active'));
@@ -635,7 +574,6 @@
         });
       });
 
-      // Phím tắt
       document.addEventListener('keydown', e => {
         if (e.key === 'ArrowLeft') prevChapter();
         if (e.key === 'ArrowRight') nextChapter();
@@ -646,7 +584,6 @@
         if (e.key === 'c' || e.key === 'C') openComments();
       });
 
-      // Progress bar
       window.addEventListener('scroll', () => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -654,7 +591,6 @@
         document.getElementById('progressBar').style.width = scrolled + '%';
       });
 
-      // Swipe gestures
       let touchStartX = 0;
       document.addEventListener('touchstart', e => {
         touchStartX = e.changedTouches[0].screenX;
@@ -669,7 +605,6 @@
       });
     }
 
-    // ==================== SETTINGS & THEME ====================
     function loadReaderSettings() {
       const savedFont = localStorage.getItem('reader_font_size') || '1.1';
       const savedLine = localStorage.getItem('reader_line_height') || '1.9';
@@ -705,7 +640,6 @@
       icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
     }
 
-    // ==================== COMMENTS & PROGRESS ====================
     function openComments() {
       window.location.href = `comments.html?slug=${slug}&chap=${currentChapter.num}`;
     }
@@ -731,11 +665,9 @@
       }
     }
 
-    // Auto save progress
     setInterval(saveReadingProgress, 10000);
     window.addEventListener('beforeunload', saveReadingProgress);
 
-    // ==================== TOAST ====================
     function showToast(msg) {
       const toast = document.getElementById('toast');
       toast.textContent = msg;

@@ -13,7 +13,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4c6ef5">
@@ -66,7 +66,6 @@
       padding: 0 20px;
     }
 
-    /* Header */
     header {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -119,7 +118,6 @@
       transform: scale(1.12);
     }
 
-    /* Search Hero */
     .search-hero {
       padding: 60px 0;
       text-align: center;
@@ -166,7 +164,6 @@
       pointer-events: none;
     }
 
-    /* Filters */
     .filters {
       display: flex;
       flex-wrap: wrap;
@@ -203,7 +200,6 @@
       border-color: var(--primary);
     }
 
-    /* Results */
     .results-info {
       text-align: center;
       margin: 30px 0;
@@ -271,7 +267,6 @@
       color: #fbbf24;
     }
 
-    /* Empty State */
     .empty-state {
       text-align: center;
       padding: 80px 20px;
@@ -284,7 +279,6 @@
       color: var(--border);
     }
 
-    /* Loading State */
     .loading {
       display: flex;
       justify-content: center;
@@ -298,7 +292,6 @@
       margin-right: 12px;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .search-hero h1 { font-size: 2.2rem; }
       .search-input { padding: 16px 55px 16px 20px; font-size: 1.05rem; }
@@ -385,52 +378,42 @@
 
   <script>
     // ==================== API CONFIGURATION ====================
-    const API_BASE_URL = 'https://truyen-cute-api.onrender.com';
-    
-    // Hàm gọi API chung
+    const API_BASE = 'https://truyen-cute-api.onrender.com';
+
     async function fetchAPIData(endpoint, options = {}) {
       try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
           method: options.method || 'GET',
           headers: {
             'Content-Type': 'application/json'
           },
           body: options.body ? JSON.stringify(options.body) : undefined
         });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         return { status: 'success', data };
-        
+
       } catch (error) {
         console.error('API Error:', error);
         return { status: 'error', message: error.message };
       }
     }
 
-    // Hàm lấy tất cả truyện
     async function fetchAllStories() {
-      const result = await fetchAPIData('/api/stories');
-      return result;
+      return await fetchAPIData('/api/stories');
     }
 
-    // Hàm tìm kiếm truyện (nếu API có endpoint search)
     async function searchStoriesFromAPI(query, filters) {
-      // Thử endpoint search trước
       const params = new URLSearchParams();
       if (query) params.append('q', query);
       if (filters.genre) params.append('genre', filters.genre);
       if (filters.status) params.append('status', filters.status);
       
-      const result = await fetchAPIData(`/api/stories/search?${params.toString()}`);
-      return result;
+      return await fetchAPIData(`/api/stories/search?${params.toString()}`);
     }
     // ====================================================================================
 
-    // ==================== GLOBAL VARIABLES ====================
     const searchInput = document.getElementById('searchInput');
     const genreFilter = document.getElementById('genreFilter');
     const statusFilter = document.getElementById('statusFilter');
@@ -443,14 +426,12 @@
     let isLoading = false;
     let searchTimeout;
 
-    // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       updateThemeIcon();
       await loadStoriesFromAPI();
       setupEventListeners();
-      
-      // Lấy từ khóa từ URL nếu có
+
       const urlParams = new URLSearchParams(window.location.search);
       const urlQuery = urlParams.get('q');
       if (urlQuery) {
@@ -459,50 +440,38 @@
       }
     });
 
-    // ==================== API DATA LOADING ====================
     async function loadStoriesFromAPI() {
       if (isLoading) return;
-      
       isLoading = true;
       searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải truyện...</div>';
 
       try {
-        // Thử lấy tất cả truyện từ API
         const result = await fetchAllStories();
-        
-        if (result.status === 'error') {
-          throw new Error(result.message || 'Không thể tải dữ liệu');
-        }
+        if (result.status === 'error') throw new Error(result.message || 'Không thể tải dữ liệu');
 
-        // Chuyển đổi dữ liệu API sang format UI
         allStories = (result.data || []).map(story => ({
           id: story._id || story.id,
+          slug: story.slug || story.id,
           title: story.title || 'Không tên',
           author: story.author || 'Ẩn danh',
           genres: story.genres || [],
           status: story.status === 'ongoing' ? 'Đang ra' : story.status === 'completed' ? 'Hoàn thành' : story.status || 'Không rõ',
-          rating: 4.5, // API không có rating, mặc định 4.5
+          rating: story.rating || 4.5,
           cover: story.cover || 'https://via.placeholder.com/220x290/4c6ef5/ffffff?text=No+Cover',
           views: story.views || 0
         }));
 
-        // Lưu vào localStorage làm backup
         localStorage.setItem('all_stories_backup', JSON.stringify(allStories));
-        
-        // Hiển thị tất cả truyện ban đầu
         displayResults(allStories, '');
-        
+
       } catch (error) {
         console.error('Lỗi tải truyện:', error);
-        
-        // Fallback: thử load từ localStorage
         const saved = localStorage.getItem('all_stories_backup');
         if (saved) {
           allStories = JSON.parse(saved);
           displayResults(allStories, '');
           showToast('Đang hiển thị dữ liệu tạm thời');
         } else {
-          // Fallback cuối: dùng dữ liệu mẫu
           useSampleData();
         }
       } finally {
@@ -511,20 +480,17 @@
     }
 
     function useSampleData() {
-      // Dữ liệu mẫu fallback (giữ nguyên như code gốc)
       allStories = [
-        { id: '1', title: "Solo Leveling", author: "Chugong", genres: ["Hành động", "Huyền huyễn"], status: "Hoàn thành", rating: 4.9, cover: "https://via.placeholder.com/220x290/4c6ef5/ffffff?text=Solo", views: 2850000 },
-        { id: '2', title: "One Piece", author: "Eiichiro Oda", genres: ["Hành động", "Phiêu lưu"], status: "Đang ra", rating: 4.8, cover: "https://via.placeholder.com/220x290/38b2ac/ffffff?text=One+Piece", views: 5000000 },
-        { id: '3', title: "Your Name", author: "Makoto Shinkai", genres: ["Tình cảm", "Huyền bí"], status: "Hoàn thành", rating: 4.7, cover: "https://via.placeholder.com/220x290/ef4444/ffffff?text=Your+Name", views: 1200000 },
-        { id: '4', title: "Attack on Titan", author: "Hajime Isayama", genres: ["Hành động", "Kinh dị"], status: "Hoàn thành", rating: 4.6, cover: "https://via.placeholder.com/220x290/1e293b/ffffff?text=AoT", views: 3800000 }
+        { id: '1', slug: 'solo-leveling', title: "Solo Leveling", author: "Chugong", genres: ["Hành động", "Huyền huyễn"], status: "Hoàn thành", rating: 4.9, cover: "https://via.placeholder.com/220x290/4c6ef5/ffffff?text=Solo", views: 2850000 },
+        { id: '2', slug: 'one-piece', title: "One Piece", author: "Eiichiro Oda", genres: ["Hành động", "Phiêu lưu"], status: "Đang ra", rating: 4.8, cover: "https://via.placeholder.com/220x290/38b2ac/ffffff?text=One+Piece", views: 5000000 },
+        { id: '3', slug: 'your-name', title: "Your Name", author: "Makoto Shinkai", genres: ["Tình cảm", "Huyền bí"], status: "Hoàn thành", rating: 4.7, cover: "https://via.placeholder.com/220x290/ef4444/ffffff?text=Your+Name", views: 1200000 },
+        { id: '4', slug: 'attack-on-titan', title: "Attack on Titan", author: "Hajime Isayama", genres: ["Hành động", "Kinh dị"], status: "Hoàn thành", rating: 4.6, cover: "https://via.placeholder.com/220x290/1e293b/ffffff?text=AoT", views: 3800000 }
       ];
       displayResults(allStories, '');
       showToast('Đang dùng dữ liệu mẫu');
     }
 
-    // ==================== SEARCH FUNCTIONALITY ====================
     function setupEventListeners() {
-      // Lắng nghe thay đổi trên tất cả input
       [searchInput, genreFilter, statusFilter, ratingFilter].forEach(el => {
         el.addEventListener('input', () => {
           clearTimeout(searchTimeout);
@@ -540,20 +506,18 @@
       const status = statusFilter.value;
       const minRating = parseFloat(ratingFilter.value) || 0;
 
-      // Hiển thị trạng thái loading
       searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
 
       try {
-        // Thử tìm kiếm qua API trước
         const filters = { genre, status, rating: minRating };
         const result = await searchStoriesFromAPI(query, filters);
         
         let filteredStories = [];
         
         if (result.status === 'success' && result.data && result.data.length > 0) {
-          // Nếu API trả về kết quả, dùng kết quả API
           filteredStories = result.data.map(story => ({
             id: story._id || story.id,
+            slug: story.slug || story.id,
             title: story.title || 'Không tên',
             author: story.author || 'Ẩn danh',
             genres: story.genres || [],
@@ -563,7 +527,6 @@
             views: story.views || 0
           }));
         } else {
-          // Nếu API không có endpoint search, filter local
           filteredStories = allStories.filter(story => {
             const matchesQuery = !query || 
               story.title.toLowerCase().includes(query) || 
@@ -583,7 +546,6 @@
       } catch (error) {
         console.error('Lỗi tìm kiếm:', error);
         
-        // Fallback: filter local nếu API lỗi
         const filteredStories = allStories.filter(story => {
           const matchesQuery = !query || 
             story.title.toLowerCase().includes(query) || 
@@ -629,7 +591,7 @@
             </div>
           </div>
         `;
-        card.onclick = () => window.location.href = `story-detail.html?id=${story.id}`;
+        card.onclick = () => window.location.href = `story-detail.html?slug=${story.slug}`;
         searchResults.appendChild(card);
       });
     }
@@ -640,7 +602,6 @@
       return text.replace(regex, '<mark style="background:#748ffc;color:white;padding:0 4px;border-radius:4px;">$1</mark>');
     }
 
-    // ==================== THEME ====================
     function initTheme() {
       const saved = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -663,7 +624,6 @@
       icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
     }
 
-    // ==================== TOAST ====================
     function showToast(message) {
       const toast = document.createElement('div');
       toast.style.cssText = `
@@ -689,7 +649,6 @@
       }, 2500);
     }
 
-    // Thêm CSS animation cho toast
     const style = document.createElement('style');
     style.textContent = `
       @keyframes fadeInUp {
